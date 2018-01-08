@@ -70,8 +70,9 @@ if( !file.exists("huisman.csv") ) {
     huisman <- read.csv("huisman.csv",
                         header=TRUE)
 }
-## huisman$time <- NULL
+huisman$time <- NULL
 huisman <- huisman[ 300:500, ]
+print( names(huisman) )
 
 ## Normalize and add noise 
 huisman <- data.frame(scale(huisman)) + runif(prod(dim(huisman))) * sqrt(0.1)
@@ -81,9 +82,12 @@ old.par <- par(mfrow=c(2, 3))
 cols <- c("N1", "N2", "N3", "N4", "N5")
 for( col in cols )
 {
+    ts <- huisman[, col]
+    print( ts[1:4] )
     ## Run simplex with CV
-    output <- simplex(huisman[, col],
-                      stats_only = TRUE)
+    output <- simplex(ts,
+                      stats_only = TRUE,
+                      silent = TRUE)
     
     ## Plot
     plot(output$E,
@@ -95,7 +99,7 @@ for( col in cols )
     grid(ny = NA,
          col = "red",
          lty = 1)
-
+    ## print(paste0("Var ", col, " best E ", which(output$E == max(output$E)) ) ) 
 }
 par(old.par)
 ## plot(

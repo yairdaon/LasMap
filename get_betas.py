@@ -8,13 +8,14 @@ import helpers
 
 from sklearn.linear_model import Lasso as Lasso
 
-df = pd.read_csv( "huisman.csv" )
-df = df.iloc[300:500] ## For testing, make df short
+df = pd.read_csv( "data/huisman.csv" )
+df = df.iloc[100:200]
+# pdb.set_trace()
 df = helpers.normalize(df,time="time")
 df = helpers.add_noise(df,
                        sig=math.sqrt(0.1),
                        time="time")
-df.to_csv("noisy_huisman.csv",
+df.to_csv("data/noisy_huisman.csv",
               index=False)
 
 ## The dictionary of lags
@@ -40,7 +41,6 @@ for var in ["N1", "N2", "N3", "N4", "N5"]:
 
     obs = obs[no_nans]
     trim = df[no_nans]
-
     
     ## Preallocate
     betas = np.empty(trim.shape,
@@ -63,10 +63,9 @@ for var in ["N1", "N2", "N3", "N4", "N5"]:
             print( "Cross validating using row " + str(index) + "."  )
         
 
-    
     betas = pd.DataFrame(data=betas,
                          columns=df.columns,
                          index=trim["time"])
     
-    betas.to_csv("active_" + var + ".csv",index_label="time")
+    betas.to_csv("data/active_" + var + ".csv",index_label="time")
             

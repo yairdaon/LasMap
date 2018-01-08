@@ -29,18 +29,23 @@ def add_noise(df,
 ##############################################
 def normalize(df, time=None):
     if time is not None:
-        ts = df[time]
+
+        ## For some reason casting helps, I have no clue why. Test
+        ## passes wihout casting though.
+        ts = np.array(df[time], dtype=np.int32)
    
     ## Normalize df to zero mean unit variance
     names = df.columns
     df = prep.scale(df,axis=0)
     df = pd.DataFrame(data=df,
                       columns = names)
+
     if time is not None:
         df[time] = ts
-
+    
     return df
 
+## Test
 if __name__ == "__main__":
 
         arr = np.array([ [1,1,3,4],
@@ -52,16 +57,17 @@ if __name__ == "__main__":
         df = pd.DataFrame( arr )
         df.columns = ["time", "x", "y", "z" ]
         normalized = normalize(df,time="time")
-        assert np.all( normalized.mean()[1:] < 1e-14 ) 
+        assert np.all( np.abs(normalized.mean()[1:]) < 1e-14 ) 
 
         
 ##############################################
 ## Lagging function ##########################
 ##############################################
 
-def lag( df,
-         lags,
-         time=None ):
+## Lags df according to lags. Maintains the time column.
+def lag(df,
+        lags,
+        time=None):
 
     if time is None:
         lagged = pd.DataFrame()
@@ -71,7 +77,8 @@ def lag( df,
         lagged = pd.DataFrame(data=ts,
                               columns=[time])
    
-    ## If lags is int, we lag all variables 0,...,lags-1
+    ## If lags is int, we lag all variables 0,...,lags-1. Here we
+    ## create the lagging dictionary.
     if isinstance( lags, int ):
         dic = {}
         for col in df.columns:
@@ -87,6 +94,7 @@ def lag( df,
             
     return lagged
 
+## Test
 if __name__ == "__main__":
     arr = np.array([ [1,1,3,4],
                      [2,4,3,6],
@@ -142,7 +150,7 @@ def lasso_map(df,
     df  = (df.T * weights).T
     obs = obs * weights
 
-    ## Create the Lasso object and fit the data.
+    ## Initialize the Lasso object and fit the data.
     lasso.alpha = 1 ## Initialize to 1
     lasso.fit(df, obs)
     active = lasso.coef_ != 0 
@@ -187,7 +195,7 @@ def lasso_map(df,
             
 if __name__ == "__main__":
 
-    ## Test a many times we actually get the correct number of
+    ## Test many a times we actually get the correct number of
     ## non-zero coefficients
     for i in range( 1500 ):
         ## Design matrix (data frame)

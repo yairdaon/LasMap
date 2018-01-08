@@ -18,10 +18,10 @@ for var_ind in range(1,6):
     if var_ind == 5:
         other = "N1"
     
-    active = pd.read_csv("active_" + var + ".csv")
-    df     = pd.read_csv("noisy_huisman.csv")
+    active = pd.read_csv("data/active_" + var + ".csv")
+    df     = pd.read_csv("data/noisy_huisman.csv")
     df     = pd.merge(df,active,on="time")
-    df     = df.iloc[400:500]
+    # df     = df.iloc[400:500]
     t = df["time"]
 
 
