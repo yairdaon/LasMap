@@ -1,13 +1,16 @@
 import numpy as np
 import pandas as pd
+## Block is the method that actually performs simplex projection. It
+## does so for one point only. All other methods are wrappers around
+## this method --- they manage generating block structure etc.
 
-def block(data,
-          obs,
-          x,
-          num_nn=len(x)+1):
+def generic(data,
+            obs,
+            x,
+            num_nn=len(x)+1):
     
     '''
-    a generic method to perform simplex projection.
+    A generic method to perform simplex projection. Takes numpy arrays.
     
     data is a numpy array, T by E.
     
@@ -18,11 +21,8 @@ def block(data,
 
     '''
     
-    ## Row diffs
-    diff = data - x
-
-    ## Row distances from x
-    dist = np.linalg.norm(diff, axis=1)
+    ## Row distances from x. Calculate norm by summing over axis #1.
+    dist = np.linalg.norm(data - x, axis=1)
 
     ## Get the num_nn points with least distance. 
     ind = np.argsort(dist)[0:num_nn]
@@ -36,23 +36,44 @@ def block(data,
 
     return pred
     
-def univariate(lib,
-               E,
-               pred=None,
-               time=None):
+def univariate(lib, E):
     ''' 
-    does univariate prediction, uses cross validation by default.
+    Perform univariate prediction with cross validation.
+    
+    We always assume the index column is time.
     '''
 
-    lib_block = helpers.lag(df, E, time)
-    oos_block = 
-
-def join(df,
-         target):
+    ## We verify data frame only has one variable. Consequently, this
+    ## is the variable name and the one that is lagged.
+    assert len(lib.columns == 1)
+    varName = lib.columns[0]
     
-    pass
+    ## Create lagged block
+    block = helpers.lag(lib, E)
 
-def seperate(df,
-             obs):
-    
-    pass
+    ## Add an observation ( "_p1" ) column.
+    block = helpers.extend_obs(block, varName)
+
+    ## Keep the observables as a separate data frame...
+    obs = block[varName + "_p1"]
+
+    ## ... and remove from the block
+    block = block.drop([varName + "_p1"],axis=1)
+
+    # preallocate the predicted data frame:
+    preds = pd.DataFrame(index=obs.index,
+                         columns=obs.columns)
+
+    for row_index, row_data in block.iterrows():
+
+        ## Remove current row from the data fed to the generic method.
+        tmp_block = block.drop(row_index)
+        tmp_obs   = obs.drop(row_index)
+        
+        ## Indexing by time stamp, so use loc and *not* iloc.
+        preds.loc[row_index] = simplex(tmp_block,
+                                       tmp_obs,
+                                       row_data)
+        
+
+    return preds

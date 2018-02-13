@@ -16,4 +16,4 @@ obs = np.array( [ 1, 1, 1, 100, 200, 1, 1 ] )
 
 x = np.array( [0.5, 0.5, 0.5, 0.5] )
 
-assert simplex.block(data, obs, x) == 1.
+assert simplex.generic(data, obs, x) == 1.

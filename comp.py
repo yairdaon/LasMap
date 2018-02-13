@@ -101,7 +101,7 @@ def get_betas(var,
     lasso_obj.alpha = 1
       
     ## Observations are one time step ahead
-    obs = pd.DataFrame(data = np.array(df[var + "_0"].shift(-1)),
+    obs = pd.DataFrame(data = helpers.make_obs(df,var+"_0"),
                        index = df["time"],
                        columns = [var + "_p1"])
       
