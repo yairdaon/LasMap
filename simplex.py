@@ -1,5 +1,8 @@
 import numpy as np
 import pandas as pd
+import pdb
+
+import helpers
 ## Block is the method that actually performs simplex projection. It
 ## does so for one point only. All other methods are wrappers around
 ## this method --- they manage generating block structure etc.
@@ -7,7 +10,7 @@ import pandas as pd
 def generic(data,
             obs,
             x,
-            num_nn=len(x)+1):
+            num_nn=0):
     
     '''
     A generic method to perform simplex projection. Takes numpy arrays.
@@ -20,7 +23,11 @@ def generic(data,
     x is a numpy array of length E.
 
     '''
+
     
+    if num_nn == 0:
+        num_nn = len(x)+1
+
     ## Row distances from x. Calculate norm by summing over axis #1.
     dist = np.linalg.norm(data - x, axis=1)
 
@@ -35,12 +42,15 @@ def generic(data,
     pred = np.sum( w * obs ) / np.sum( w )
 
     return pred
-    
-def univariate(lib, E):
-    ''' 
-    Perform univariate prediction with cross validation.
-    
+
+def univariate(lib,
+               E,
+               tp=1):
+    '''Perform univariate prediction with cross validation. Returns
+    dataframe of predictions and observations.  
+
     We always assume the index column is time.
+
     '''
 
     ## We verify data frame only has one variable. Consequently, this
@@ -52,17 +62,19 @@ def univariate(lib, E):
     block = helpers.lag(lib, E)
 
     ## Add an observation ( "_p1" ) column.
-    block = helpers.extend_obs(block, varName)
+    block = helpers.extend_obs(block, varName, tp=tp)
 
     ## Keep the observables as a separate data frame...
-    obs = block[varName + "_p1"]
+    obs = block[varName + "_p" + str(tp)]
 
     ## ... and remove from the block
     block = block.drop([varName + "_p1"],axis=1)
 
-    # preallocate the predicted data frame:
-    preds = pd.DataFrame(index=obs.index,
-                         columns=obs.columns)
+    # Preallocate the predicted data frame. This line creates a data
+    # frame with NaN values with the size of obs and indices of obs:
+    ret = pd.DataFrame(index=obs.index,
+                         columns=["pred"],
+                         data=np.full(len(obs), np.nan) )
 
     for row_index, row_data in block.iterrows():
 
@@ -71,9 +83,12 @@ def univariate(lib, E):
         tmp_obs   = obs.drop(row_index)
         
         ## Indexing by time stamp, so use loc and *not* iloc.
-        preds.loc[row_index] = simplex(tmp_block,
-                                       tmp_obs,
-                                       row_data)
+        ret.loc[row_index] = generic(tmp_block.values,
+                                     tmp_obs.values,
+                                     row_data.values)
         
-
-    return preds
+    ## Extend the returned object
+    ret["obs"] = obs
+    return ret
+    
+        
