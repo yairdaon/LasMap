@@ -73,6 +73,6 @@ for variable in df.columns:
     plt.plot(Es, rhos)
     plt.ylabel("Prediction skill - rho")
     plt.xlabel("Embedding dimension - E")
-    plt.savefig("pix/" + variable + "_skill_full.png")
+    plt.savefig("pix/python/" + variable + "_skill_full.png")
     plt.close()
 

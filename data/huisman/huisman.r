@@ -47,7 +47,7 @@ gen_Huisman <- function(n, tau = 10)
     }
 
     timepoints <- seq(1,n)*tau
-    model_data <- lsoda(c(N0,R0),timepoints,dF,parms =  ps,hmax = 0.01,maxsteps = 5000)
+    model_data <- lsoda(c(N0,R0), timepoints, dF, parms = ps,hmax = 0.01, maxsteps = 5000)
     ## model_data <- ode(c(N0,R0),timepoints,dF,parms =  ps,hini = 0.01,"rk4")
     model_data <- as.data.frame(model_data)
     

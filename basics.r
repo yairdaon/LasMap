@@ -11,7 +11,7 @@ df <- read.csv("data/huisman.csv",
                row.names=1)
 
 ## Add row of sum
-df["sum"] <- df["N2"] + df["N4"]
+df["sum"] <- df["N3"] + df["N5"]
 
 ## normalize
 df <- as.data.frame(scale(df))
@@ -21,7 +21,7 @@ for( variable in names( df ) )
 {
     print( variable )
     output <- simplex(df[,variable])
-    png(paste0("pix/", variable, "_skill_full_R.png"))
+    png(paste0("pix/R/", variable, "_skill_full.png"))
     plot(output$E, output$rho, type = "l",
          xlab = "Embedding Dimension (E)",
          ylab = "Forecast Skill (rho)")
