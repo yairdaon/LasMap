@@ -29,9 +29,10 @@ x = np.array( [0.5, 0.5, 0.5, 0.5] )
 assert simplex.generic(data, obs, x) == 1.
 
 
-############################################
-## Second test for generic method ##########
-############################################
+##############################################################
+## Second test for generic method, using two and three nearest
+## neighbours
+##############################################################
 x = np.ones(3)
 obs = np.array([1.,2.,3.,4.])
 data = np.empty( (4,3) )
@@ -41,37 +42,42 @@ v = np.array( [2,-1,3] )
 v = v / np.linalg.norm(v)
 data[0,:] = x + v
 
+## So second line is distance 1/2 from x
 v = np.array( [-1,0,3])
 v = v / np.linalg.norm(v) / 2.
 data[1,:] = x + v
 
+## So third line is distance 2 from x
 v = np.array( [1,6,2])
 v = v / np.linalg.norm(v) * 2.
 data[2,:] = x + v
 
+## So fourth line is distance 3 from x
 v = np.array( [0,3,-4])
 v = v / np.linalg.norm(v) * 3.
 data[3,:] = x + v
 
-
+## Just check we didn't screw up with the linear algebra.
 assert abs(np.linalg.norm(data[0,:]-x) - 1.0) < 1e-14
 assert abs(np.linalg.norm(data[1,:]-x) - 0.5) < 1e-14
 assert abs(np.linalg.norm(data[2,:]-x) - 2.0) < 1e-14
 assert abs(np.linalg.norm(data[3,:]-x) - 3.0) < 1e-14
 
-
-## Using two nearest neighbours, the analytic calculation gives:
+## Using two nearest neighbours simplex the following calculation
+## predicts the observable at x:
 calc = (1 * exp(-1/0.5) + 2 * exp(-0.5/0.5) ) / ( exp(-1/0.5) + exp(-0.5/0.5) )
 
-## The function call gives:
+## Calling the function, we get:
 func = simplex.generic(data,
                        obs,
                        x,
                        num_nn=2)
 
+## They need to be equal, at least up to numerical errors.
 assert abs(func - calc) < 1e-14
 
-## Save the data for R:
+## We want to comare our results with the rEDM package, so we save the
+## data:
 arr=np.empty((5,4))
 arr[0:4,0:3]= data
 arr[0:4,  3]= obs
@@ -82,18 +88,40 @@ df = pd.DataFrame(columns=["V1", "V2", "V3", "target" ],
 df.to_csv("data/test_data_2NN.csv",
           index=False)
 
-## Using three nearest neighbours:
+## Similarly, using three nearest neighbours:
 calc = (1 * exp(-1/0.5) + 2 * exp(-0.5/0.5) + 3 * exp(-2./0.5) ) / ( exp(-1/0.5) + exp(-0.5/0.5) + exp(-2./0.5) )
 func = simplex.generic(data,
                        obs,
                        x,
                        num_nn=3)
 
+## They better be equal...
 assert abs(func - calc) < 1e-14
-df.iloc[4,3]=calc
+
+## Save this for rEDM, only changing the result.
+df.at[4,"target"]=calc
 
 df.to_csv("data/test_data_3NN.csv",
           index=False)
+
+#####################################
+## Test generic_sets
+#####################################
+lib = df.loc[0:3]
+pred = df.loc[4:4]
+predictors = ["V1", "V2", "V3"]
+target = "target"
+calc = simplex.generic_sets(lib,
+                            pred,
+                            target,
+                            predictors)
+
+df.at[4,"target"] = calc["pred"]
+
+df.to_csv("data/test_data_generic_sets.csv",
+          index=False)
+
+
 
 
 # ## Run and save using fake data

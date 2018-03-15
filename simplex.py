@@ -4,7 +4,6 @@ import pdb
 import warnings
 
 import helpers
-min_weight = 0.000001 ## From C++ code
 
 ## Block is the method that actually performs simplex projection. It
 ## does so for one point only. All other methods are wrappers around
@@ -15,8 +14,7 @@ def generic(data,
             x,
             num_nn=0):
     
-    '''
-    A generic method to perform simplex projection. Takes numpy arrays.
+    '''A generic method to perform simplex projection. Takes numpy arrays.
     
     data is a numpy array, T by E.
     
@@ -24,13 +22,16 @@ def generic(data,
     point.
 
     x is a numpy array of length E.
+    
+    Below, 1e-6 is hard coded to match the definition of min_weight
+    from Sugihara's original C++ code, see
+    https://github.com/ha0ye/rEDM/src/forecastmachine.cpp
 
     '''
     
     if np.isnan(x).any():
         warnings.warn("Data point contains NaN values. Returning NaN.")
         return np.nan
-
     
     if num_nn == 0:
         num_nn = len(x)+1
@@ -60,12 +61,49 @@ def generic(data,
     ## Prediction is a weighted mean of nearest neighbours'
     ## observations.
     obs  = obs[ind]
-    w    = np.maximum(np.exp(-dist[ind] / np.min(dist) ), min_weight )
+    w = np.maximum(np.exp(-dist[ind] / np.min(dist) ), 1e-6 ) 
     
     pred = np.sum( w * obs ) / np.sum( w )
-    # pdb.set_trace()
     
     return pred
+
+def generic_sets(lib_set,
+                 pred_set,
+                 target,
+                 predictors,
+                 num_nn=0):
+    '''We get two data frames. Use lib_set to make predictions on
+    pred_set. We try to guess target column, given predictors columns.
+
+    '''
+
+    if not isinstance(lib_set, pd.DataFrame):
+        raise ValueError( """lib_set is not a DataFrame. Possible reason: slicing a DataFrame by
+        (e.g.) df.loc[4] returns a Series. Slicing by df.loc[4:4] returns a
+        DataFrame.""" )
+
+    if not isinstance(pred_set, pd.DataFrame):
+        raise ValueError( """pred_set is not a DataFrame. Possible reason: slicing a DataFrame
+        (e.g.) by df.loc[4] returns a Series. Slicing by df.loc[4:4] returns
+        a DataFrame.""" )
+    
+    ret = pd.DataFrame(index=pred_set.index,
+                       columns=["obs"],
+                       data=pred_set["target"].values )
+    ret["pred"] = np.full(len(ret), np.nan)
+
+    data  = lib_set[ predictors ] 
+    obs   = lib_set[ target ] ## obs for the generic method
+    block = pred_set[ predictors ]
+    
+    for row_index, row_data in block.iterrows():
+        # pdb.set_trace()
+        ret.at[row_index, "pred"] = generic(data,
+                                            obs,
+                                            row_data,
+                                            num_nn=num_nn)
+        
+    return ret
 
 def univariate(lib,
                E,
