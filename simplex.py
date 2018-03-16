@@ -14,8 +14,8 @@ def generic(data,
             x,
             num_nn=0):
     
-    '''A generic method to perform simplex projection. Takes numpy arrays.
-    
+    '''A generic method to perform simplex projection. Takes numpy arrays
+       
     data is a numpy array, T by E.
     
     obs is a numpy array of length T - one observable for every time
@@ -28,7 +28,19 @@ def generic(data,
     https://github.com/ha0ye/rEDM/src/forecastmachine.cpp
 
     '''
+
+    if not isinstance(data, np.ndarray):
+        warnings.warn( """Variable data in simplex.generic method is not a numpy array
+        (probably a DataFrame). Expect unexpected behaviour.""")
+
+    if not isinstance(obs, np.ndarray):
+        warnings.warn( """Variable obs in simplex.generic method is not a numpy array
+        (probably a DataFrame). Expect unexpected behaviour.""")
     
+    if not isinstance(x, np.ndarray):
+        warnings.warn( """Variable x in simplex.generic method is not a numpy array (probably
+        a DataFrame). Expect unexpected behaviour.""")
+
     if np.isnan(x).any():
         warnings.warn("Data point contains NaN values. Returning NaN.")
         return np.nan
@@ -51,16 +63,18 @@ def generic(data,
     ## After this, data should be valid and we can actually make a prediction!
     obs = obs[keep]
     data = data[keep]
-    
+
     ## Row distances from x. Calculate norm by summing over axis #1.
     dist = np.linalg.norm(data - x, axis=1)
 
     ## Get the num_nn points with least distance. 
     ind = np.argsort(dist)[0:num_nn]
-
+   
     ## Prediction is a weighted mean of nearest neighbours'
     ## observations.
+    ##pdb.set_trace()
     obs  = obs[ind]
+    
     w = np.maximum(np.exp(-dist[ind] / np.min(dist) ), 1e-6 ) 
     
     pred = np.sum( w * obs ) / np.sum( w )
@@ -97,10 +111,10 @@ def generic_sets(lib_set,
     block = pred_set[ predictors ]
     
     for row_index, row_data in block.iterrows():
-        # pdb.set_trace()
-        ret.at[row_index, "pred"] = generic(data,
-                                            obs,
-                                            row_data,
+        
+        ret.at[row_index, "pred"] = generic(data.values,
+                                            obs.values,
+                                            row_data.values,
                                             num_nn=num_nn)
         
     return ret

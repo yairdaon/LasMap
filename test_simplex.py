@@ -7,6 +7,8 @@ import pdb
 
 import simplex
 
+np.random.seed(19)
+
 ############################################
 ## First Test ##############################
 ############################################
@@ -83,7 +85,8 @@ arr[0:4,0:3]= data
 arr[0:4,  3]= obs
 arr[4  ,0:3]= x
 arr[4  ,  3]= calc
-df = pd.DataFrame(columns=["V1", "V2", "V3", "target" ],
+columns=["V1", "V2", "V3", "target" ]
+df = pd.DataFrame(columns=columns,
                   data=arr)
 df.to_csv("data/test_data_2NN.csv",
           index=False)
@@ -107,21 +110,28 @@ df.to_csv("data/test_data_3NN.csv",
 #####################################
 ## Test generic_sets
 #####################################
-lib = df.loc[0:3]
-pred = df.loc[4:4]
+
+## Create a dataframe and populate it with fake data.
+lib = [1,2,5,6,8]
+pred = [9,11,13,14,16]
+columns = ["V1", "V2", "V3", "target" ]
 predictors = ["V1", "V2", "V3"]
 target = "target"
-calc = simplex.generic_sets(lib,
-                            pred,
+df = pd.DataFrame(index=np.ravel([lib,pred]),
+                  columns=columns,
+                  data=np.random.normal(size=(len(lib)+len(pred),len(columns)))) 
+
+calc = simplex.generic_sets(df.reindex(labels=lib, axis="index"),## df.reindex(labels=lib, axis="index"),
+                            df.reindex(labels=pred, axis="index"),
                             target,
                             predictors)
 
-df.at[4,"target"] = calc["pred"]
+## Set this data in the dataframe
+df.at[pred,"target"] = calc["pred"]
 
+# Save...
 df.to_csv("data/test_data_generic_sets.csv",
           index=False)
-
-
 
 
 # ## Run and save using fake data

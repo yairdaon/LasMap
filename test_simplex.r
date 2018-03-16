@@ -39,8 +39,8 @@ data <- read.csv("data/test_data_generic_sets.csv",
                  header = TRUE)
 
 pred <- block_lnlp(data,
-                   lib=c(1,4),
-                   pred=c(5,5),
+                   lib=c(1,5),
+                   pred=c(6,10),
                    norm_type="L2 norm",
                    P = 0.5,
                    method="simplex",
