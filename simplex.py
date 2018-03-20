@@ -123,52 +123,60 @@ def univariate(lib,
                E,
                tp=1):
     
-    '''Perform univariate prediction with cross validation. Returns
+    '''Performs univariate prediction with cross validation. Returns
     dataframe of predictions and observations.
 
     We always assume the index column is time.
+
+    tp is ***time-steps***. That is to say, if the index (time) set is
+    [10,20,30,40,50,...], then tp==1 means that for index (time) 10 we
+    try to predict the value at index (time) 20. Thus, it is implicity
+    assumed that observations are equally spaced and ordered.
 
     '''
 
     ## We verify data frame only has one variable. Consequently, this
     ## is the variable name and the one that is lagged.
-    assert len(lib.columns == 1)
+    assert len(lib.columns) == 1
     varName = lib.columns[0]
+
+    target = varName + "_p" + str(tp)
     
     ## Create lagged block
-    block = helpers.lag(lib, E+1)
+    block = helpers.lag(lib, E)
 
-    # ## Add an observation ( "_p1" ) column.
+    ## Add an observation ( "_p1" ) column.
     block = helpers.extend_obs(block, varName, tp=tp)
 
     ## Keep the observables as a separate data frame...
-    obs = block[varName + "_p" + str(tp)]
-    # obs = block[varName + "_0"]
-
+    obs = block[target]
+    
     ## ... and remove from the block
-    block = block.drop([varName + "_p1"],axis=1)
+    block = block.drop([target],axis=1)
 
-    # Preallocate the predicted data frame. This line creates a data
-    # frame with NaN values with the size of obs and indices of obs:
+    predictors = block.columns
+    
+    ## Preallocate the predicted data frame. We will later need to
+    ## shift the data so that obs and pred are aligned with it.
     ret = pd.DataFrame(index=obs.index,
-                       columns=["obs", "pred"],
-                       data=np.full((len(obs),2), np.nan) )
+                             columns=["pred"],
+                             data=np.full(len(obs), np.nan) )
+    ret["obs"] = obs.values
     
     for row_index, row_data in block.iterrows():
         
         ## Remove current row from the data fed to the generic method.
         tmp_block = block.drop(row_index)
         tmp_obs   = obs.drop(row_index)
-        # print row_index
-        # print row_data
-        ## Indexing by time stamp, so use loc and *not* iloc.
+
+        ## Indexing by time stamp, so use at and *not* iat.
         ret.at[row_index, "pred"] = generic(tmp_block.values,
                                             tmp_obs.values,
                                             row_data.values,
                                             num_nn=E+1)
 
-    ret["obs"] = obs
-    # pdb.set_trace()
-    return ret
+    ## As promised above, we shift the data so that obs and pred are
+    ## aligned with the time index.
+    return ret.shift(tp)
     
         

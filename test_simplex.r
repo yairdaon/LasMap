@@ -53,10 +53,19 @@ pred <- pred[ , c("obs", "pred") ]
 print( pred )
 
 
-## df <- merge(x=data, y=pred, by="time", all.y=TRUE) 
+py <- read.csv("data/test_data_univariate.csv",
+               header = TRUE,
+               na.strings=c("NaN"))
 
-## write.table(df,
-##             file="data/test_results.csv",
-##             quote=FALSE,
-##             row.names=FALSE,
-##             sep = ",")
+output <- simplex(py[ , c("time", "truth") ],
+                  E=2,
+                  tp=2,
+                  stats_only=FALSE)$model_output[[1]]
+output <- output[ , c("time", "pred","obs") ]
+
+ret <- merge(x=py,
+             y=output,
+             by="time",
+             all=TRUE,
+             suffixes=c("-Python", "-R") )
+print(ret)

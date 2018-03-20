@@ -7,8 +7,6 @@ import pdb
 
 import simplex
 
-np.random.seed(19)
-
 ############################################
 ## First Test ##############################
 ############################################
@@ -110,6 +108,7 @@ df.to_csv("data/test_data_3NN.csv",
 #####################################
 ## Test generic_sets
 #####################################
+np.random.seed(19)
 
 ## Create a dataframe and populate it with fake data.
 lib = [1,2,5,6,8]
@@ -133,18 +132,22 @@ df.at[pred,"target"] = calc["pred"]
 df.to_csv("data/test_data_generic_sets.csv",
           index=False)
 
+######################################################
+## Test the univariate method
+######################################################
+np.random.seed(19)
 
-# ## Run and save using fake data
-# data = pd.read_csv("data/test_data.csv",
-#                  index_col="time")
-
-# preds = simplex.univariate(data,2)
-
-# df = data.merge(preds,
-#                 how="right",
-#                 right_index=True,
-#                 left_index=True)
-# df.to_csv("data/test_results.csv",
-#           na_rep = "nan",
-#           mode = "a" )
+## Generate fake data
+n = 12
+df = pd.DataFrame(index=np.arange(n)*10,
+                  columns=["A"],
+                  data=np.random.randn(n))
+preds = simplex.univariate(df,
+                           2,
+                           tp=2)
+preds["truth"] = df["A"]
+preds.to_csv("data/test_data_univariate.csv",
+             index=True,
+             index_label="time",
+             na_rep = "NaN")
 
