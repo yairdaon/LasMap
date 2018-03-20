@@ -52,7 +52,7 @@ pred <- block_lnlp(data,
 pred <- pred[ , c("obs", "pred") ]
 print( pred )
 
-
+## Test simplex.univariate
 py <- read.csv("data/test_data_univariate.csv",
                header = TRUE,
                na.strings=c("NaN"))

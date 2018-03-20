@@ -47,11 +47,9 @@ def lag(df,
         for col in df.columns:
             dic[col] = range(lags)
         lags = dic
-
+    
     lagged = pd.DataFrame(index=df.index)
     for var, lag_list in lags.iteritems():
-        # if var == time:
-        #     continue
         for lag in lag_list:
             col = df[var].shift(lag)
             lagged[ var + "_" + str(lag) ] = col
@@ -71,17 +69,25 @@ def add_noise(df,
 ##############################################
 def normalize(df,
               return_scaler = False):
-   
+
+    '''Normalize a datafram and possibly return the scaling function. If
+    return_scaler == True, then this function also returns scaler such
+    that scaler(df) is normalized.
+
+    '''
     ## Get the routine that normalizes given df to zero mean unit
     ## variance
     scaler = prep.StandardScaler()
 
+    
     ## Rescale
-    df.loc[:,:] = scaler.fit_transform(df.values)
+    normalized = pd.DataFrame(index=df.index,
+                              columns=df.columns,
+                              data=scaler.fit_transform(df.values))
         
     if return_scaler:
-        return df, scaler
-    return df            
+        return normalized, scaler
+    return normalized            
 
 ## Got this function online I think, no tests.
 def make_ticklabels_invisible(fig):
@@ -89,4 +95,3 @@ def make_ticklabels_invisible(fig):
         ax.text(0.5, 0.5, "ax%d" % (i+1), va="center", ha="center")
         for tl in ax.get_xticklabels() + ax.get_yticklabels():
             tl.set_visible(False)
-
