@@ -10,7 +10,7 @@ import helpers
 import simplex
 
 ## Read entire data
-df = pd.read_csv("huisman.csv",
+df = pd.read_csv("~/lasmap/huisman/huisman.csv",
                  index_col="time")
 
 df["N3+N5"] = df["N3"] + df["N5"]
@@ -36,7 +36,7 @@ for ind,col in enumerate(df.columns):
     plt.plot(time, series)
     plt.ylabel( col )
     
-plt.savefig("pix/full_time_series.png")
+plt.savefig("/home/yair/lasmap/huisman/pix/python/full_time_series.png")
 plt.close()
 
 ################################################################
@@ -52,7 +52,7 @@ for ind, col in enumerate(cut.columns):
     plt.plot(time, series)
     plt.ylabel( col )
     
-plt.savefig("pix/restricted_time_series.png")
+plt.savefig("/home/yair/lasmap/huisman/pix/python/restricted_time_series.png")
 plt.close()
 
 ######################################################################
@@ -74,6 +74,6 @@ for variable in df.columns:
     plt.plot(Es, rhos)
     plt.ylabel("Prediction skill - rho")
     plt.xlabel("Embedding dimension - E")
-    plt.savefig("pix/python/" + variable + "_skill_full.png")
+    plt.savefig("/home/yair/lasmap/huisman/pix/python/" + variable + "_skill_full.png")
     plt.close()
 
