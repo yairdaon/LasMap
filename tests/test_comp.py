@@ -4,7 +4,7 @@ import pandas as pd
 import pdb
 import sys
 
-import lasmap as lp
+import comp
 
 ## Test lasso-map
 if __name__ == "__main__":
@@ -34,11 +34,11 @@ if __name__ == "__main__":
         ## A random vector in R^d
         x = np.random.randn( X.shape[1] )
 
-        beta_hat = lp.comp.lasso_map(X,
-                                     y,
-                                     x,
-                                     E=E,
-                                     theta=np.random.uniform(0,5) )
+        beta_hat = comp.lasso_map(X,
+                                  y,
+                                  x,
+                                  E=E,
+                                  theta=np.random.uniform(0,5) )
 
         ## Did we get what we wanted?
         assert np.sum(beta_hat) == E

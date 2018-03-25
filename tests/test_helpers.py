@@ -4,7 +4,7 @@ import pandas as pd
 import pdb
 import sys
 
-import lasmap as lp
+import helpers
 
 ## Test Normalize
 if __name__ == "__main__":
@@ -19,7 +19,7 @@ if __name__ == "__main__":
                           columns=[ "x", "y", "z" ],
                           data=arr)
 
-        normalized, scaler = lp.helpers.normalize(df, return_scaler=True)
+        normalized, scaler = helpers.normalize(df, return_scaler=True)
         assert np.all( np.abs(normalized.mean()[1:]) < 1e-15 ) 
 
         unnormalized = normalized * np.sqrt(scaler.var_) + scaler.mean_
@@ -40,11 +40,11 @@ if __name__ == "__main__":
                       data=arr)
        
     ## Lag using a dictionary
-    lagged = ls.helpers.lag(df, { "x" : [0,2,3], "y" : [0,3], "z" : [0,1] } )
+    lagged = helpers.lag(df, { "x" : [0,2,3], "y" : [0,3], "z" : [0,1] } )
     print( lagged )
 
     ## Lag using an integer
-    lagged = ls.helpers.lag(df, 3)
+    lagged = helpers.lag(df, 3)
     print( lagged )
 
 

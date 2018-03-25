@@ -1,6 +1,6 @@
 #!/usr/bin/Rscript
 library( "rEDM" )
-data <- read.csv("data/test_data_2NN.csv",
+data <- read.csv("tests/data/2NN.csv",
                  header = TRUE)
 
 pred <- block_lnlp(data,
@@ -17,7 +17,7 @@ pred <- block_lnlp(data,
 pred <- pred[ , c("obs", "pred") ]
 print( pred )
 
-data <- read.csv("data/test_data_3NN.csv",
+data <- read.csv("tests/data/3NN.csv",
                  header = TRUE)
 
 pred <- block_lnlp(data,
@@ -35,7 +35,7 @@ pred <- pred[ , c("obs", "pred") ]
 print( pred )
 
 
-data <- read.csv("data/test_data_generic_sets.csv",
+data <- read.csv("tests/data/generic_sets.csv",
                  header = TRUE)
 
 pred <- block_lnlp(data,
@@ -53,7 +53,7 @@ pred <- pred[ , c("obs", "pred") ]
 print( pred )
 
 ## Test simplex.univariate
-py <- read.csv("data/test_data_univariate.csv",
+py <- read.csv("tests/data/univariate.csv",
                header = TRUE,
                na.strings=c("NaN"))
 
