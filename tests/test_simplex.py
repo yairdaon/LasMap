@@ -5,7 +5,7 @@ from math import exp as exp
 import math
 import pdb
 
-import simplex
+import lasmap as lp
 
 ############################################
 ## First Test ##############################
@@ -26,7 +26,7 @@ obs = np.array( [ 1, 1, 1, 100, 200, 1, 1 ] )
 
 x = np.array( [0.5, 0.5, 0.5, 0.5] )
 
-assert simplex.generic(data, obs, x) == 1.
+assert lp.simplex.generic(data, obs, x) == 1.
 
 
 ##############################################################
@@ -68,21 +68,21 @@ assert abs(np.linalg.norm(data[3,:]-x) - 3.0) < 1e-14
 calc = (1 * exp(-1/0.5) + 2 * exp(-0.5/0.5) ) / ( exp(-1/0.5) + exp(-0.5/0.5) )
 
 ## Calling the function, we get:
-func = simplex.generic(data,
-                       obs,
-                       x,
-                       num_nn=2)
+func = lp.simplex.generic(data,
+                          obs,
+                          x,
+                          num_nn=2)
 
 ## They need to be equal, at least up to numerical errors.
 assert abs(func - calc) < 1e-14
 
 ## We want to comare our results with the rEDM package, so we save the
 ## data:
-arr=np.empty((5,4))
-arr[0:4,0:3]= data
-arr[0:4,  3]= obs
-arr[4  ,0:3]= x
-arr[4  ,  3]= calc
+arr          = np.empty((5,4))
+arr[0:4,0:3] = data
+arr[0:4,  3] = obs
+arr[4  ,0:3] = x
+arr[4  ,  3] = calc
 columns=["V1", "V2", "V3", "target" ]
 df = pd.DataFrame(columns=columns,
                   data=arr)
@@ -91,10 +91,10 @@ df.to_csv("data/test_data_2NN.csv",
 
 ## Similarly, using three nearest neighbours:
 calc = (1 * exp(-1/0.5) + 2 * exp(-0.5/0.5) + 3 * exp(-2./0.5) ) / ( exp(-1/0.5) + exp(-0.5/0.5) + exp(-2./0.5) )
-func = simplex.generic(data,
-                       obs,
-                       x,
-                       num_nn=3)
+func = ls.simplex.generic(data,
+                          obs,
+                          x,
+                          num_nn=3)
 
 ## They better be equal...
 assert abs(func - calc) < 1e-14
@@ -120,10 +120,10 @@ df = pd.DataFrame(index=np.ravel([lib,pred]),
                   columns=columns,
                   data=np.random.normal(size=(len(lib)+len(pred),len(columns)))) 
 
-calc = simplex.generic_sets(df.reindex(labels=lib, axis="index"),## df.reindex(labels=lib, axis="index"),
-                            df.reindex(labels=pred, axis="index"),
-                            target,
-                            predictors)
+calc = ls.simplex.generic_sets(df.reindex(labels=lib, axis="index"),## df.reindex(labels=lib, axis="index"),
+                               df.reindex(labels=pred, axis="index"),
+                               target,
+                               predictors)
 
 ## Set this data in the dataframe
 df.at[pred,"target"] = calc["pred"]
@@ -142,9 +142,9 @@ n = 12
 df = pd.DataFrame(index=np.arange(n)*10,
                   columns=["A"],
                   data=np.random.randn(n))
-preds = simplex.univariate(df,
-                           2,
-                           tp=2)
+preds = ls.simplex.univariate(df,
+                              2,
+                              tp=2)
 preds["truth"] = df["A"]
 preds.to_csv("data/test_data_univariate.csv",
              index=True,

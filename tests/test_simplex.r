@@ -61,6 +61,7 @@ output <- simplex(py[ , c("time", "truth") ],
                   E=2,
                   tp=2,
                   stats_only=FALSE)$model_output[[1]]
+
 output <- output[ , c("time", "pred","obs") ]
 
 ret <- merge(x=py,

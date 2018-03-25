@@ -17,7 +17,7 @@ df = pd.read_csv( "data/huisman.csv" )
 df = df.iloc[300:400]
 
 ## Normalize
-df = helpers.normalize(df,time="time")
+df = helpers.normalize(df)
 
 ## Add noise...
 # df = helpers.add_noise(df,
@@ -25,7 +25,7 @@ df = helpers.normalize(df,time="time")
 #                        time="time")
 
 ## Lag coordinates X(t), X(t-1), X(t-2). Three lags.
-df = helpers.lag(df, 3, time="time")
+df = helpers.lag(df, 3)
 
 betas = comp.get_betas("N1",
                        df )

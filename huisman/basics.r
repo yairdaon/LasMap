@@ -4,19 +4,19 @@ library( "rEDM" )
 ## source( "helpers/plotting.r" )
 ## source( "helpers/mve.r" )
 
-df <- read.csv("data/huisman.csv",
+df <- read.csv("data/huisman/huisman.csv",
                header = TRUE,
                sep = ",",
                na.strings = c( "NA", "NaN" ),
                row.names=1)
 
-## Add row of sum
-df["sum"] <- df["N3"] + df["N5"]
+## Add rows of sums
+df["N3+N5"] <- df["N3"] + df["N5"]
+df["N2+N4"] <- df["N2"] + df["N4"]
 
 ## normalize
 df <- as.data.frame(scale(df))
-Es <- 1:9
-rhos <- numeric( length(Es) )
+
 for( variable in names( df ) )
 {
     print( variable )

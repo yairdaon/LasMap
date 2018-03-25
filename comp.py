@@ -2,8 +2,6 @@ import numpy as np
 import pandas as pd
 import pdb
 import math
-import sys
-
 from sklearn.linear_model import Lasso as Lasso
 
 ###############################################
@@ -12,13 +10,13 @@ from sklearn.linear_model import Lasso as Lasso
 def lasso_map(data, 
               obs,
               x,
-              E = 3,
+              E,
               theta=1,
               lasso_obj=Lasso(warm_start=True) ):
     '''
     This function takes a data array, a point and observables and
     returns a boolean vector, stating which variables are active in
-    prediction and which are not.
+    prediction of the observable for the point and which are not.
 
     data  - lagged block - a numpy array, T by n
     obs   - observables - a numpy array, length T.
@@ -27,11 +25,9 @@ def lasso_map(data,
     theta - nonlinearity parameter. Real number
 
     '''
-    ## Row diffs
-    diffs = data - x
 
-    ## Row distances from target
-    dist = np.sqrt(np.sum( diffs * diffs, axis = 1 ) )
+    ## Row distances from x
+    dist = np.linalg.norm(data - x, axis=1)
                    
     ## Exponential weights
     weights = np.exp( -theta * dist/np.mean(dist) )
@@ -90,11 +86,13 @@ def lasso_map(data,
 def get_betas(var,
               df,
               lasso_obj=Lasso(warm_start=True)):
-    '''
-    df is assumed lagged, normalized and has a time column.
+    
+    '''df is assumed lagged and normalized. Any time/date/etc. column is
+    always assumed to be the index.
 
-    gets betas (active variables) for prediction of var
-    using cross validation at every time point
+    gets betas (active variables) for prediction of var using cross
+    validation at every time point
+
     '''
 
     ## Re-initialize the regularizing parameter to be one.

@@ -5,10 +5,17 @@ import warnings
 
 import helpers
 
-## Block is the method that actually performs simplex projection. It
-## does so for one point only. All other methods are wrappers around
-## this method --- they manage generating block structure etc.
+'''Generic is the method that actually performs simplex
+projection. It does so for one point only. All other methods are
+wrappers around this method --- they manage generating block structure
+etc.
 
+We ***always*** assume there is no "time" column - if there are time
+stamps, these are always assumed to be in the index of the
+dataframe. If there is a time/data/whatever column (that is not the
+index) - you can expect weird behaviour.
+
+'''
 
 def univariate(lib,
                E,

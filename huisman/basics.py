@@ -10,10 +10,11 @@ import helpers
 import simplex
 
 ## Read entire data
-df = pd.read_csv("data/huisman.csv",
+df = pd.read_csv("huisman.csv",
                  index_col="time")
 
-df["sum"] = df["N2"] + df["N4"]
+df["N3+N5"] = df["N3"] + df["N5"]
+df["N2+N4"] = df["N2"] + df["N4"]
 
 ## Normalize
 df = helpers.normalize(df)
@@ -23,42 +24,42 @@ df = helpers.normalize(df)
 ## frame is 600. In this region, N2 is approximately constant.
 cut = df.loc[3550:3790]
 
-# ################################################################
-# ## Plot all time series on all of their time span.
-# ################################################################
-# for ind,col in enumerate(df.columns):
+################################################################
+## Plot all time series on all of their time span.
+################################################################
+for ind,col in enumerate(df.columns):
 
-#     series = df[col]
-#     time   = df.index
+    series = df[col]
+    time   = df.index
 
-#     plt.subplot( len(df.columns), 1, ind+1 )
-#     plt.plot(time, series)
-#     plt.ylabel( col )
+    plt.subplot( len(df.columns), 1, ind+1 )
+    plt.plot(time, series)
+    plt.ylabel( col )
     
-# plt.savefig("pix/full_time_series.png")
-# plt.close()
+plt.savefig("pix/full_time_series.png")
+plt.close()
 
-# ################################################################
-# ## Plot all time series on the restricted region, where N2 is
-# ## approximately constant
-# ################################################################
-# for ind, col in enumerate(cut.columns):
+################################################################
+## Plot all time series on the restricted region, where N2 is
+## approximately constant
+################################################################
+for ind, col in enumerate(cut.columns):
 
-#     series = cut[col]
-#     time   = cut.index
+    series = cut[col]
+    time   = cut.index
 
-#     plt.subplot( len(cut.columns), 1, ind+1 )
-#     plt.plot(time, series)
-#     plt.ylabel( col )
+    plt.subplot( len(cut.columns), 1, ind+1 )
+    plt.plot(time, series)
+    plt.ylabel( col )
     
-# plt.savefig("pix/restricted_time_series.png")
-# plt.close()
+plt.savefig("pix/restricted_time_series.png")
+plt.close()
 
 ######################################################################
 ## Find rho for predicting using different embedding dimensions (and,
 ## of course) plot.
 ######################################################################
-Es = range(1,10)
+Es = range(1,11)
 rhos = np.empty( len(Es) )
 for variable in df.columns:
     print variable

@@ -2,8 +2,9 @@
 import numpy as np
 import pandas as pd
 import pdb
+import sys
 
-import helpers
+import lasmap as lp
 
 ## Test Normalize
 if __name__ == "__main__":
@@ -18,11 +19,11 @@ if __name__ == "__main__":
                           columns=[ "x", "y", "z" ],
                           data=arr)
 
-        normalized, scaler = helpers.normalize(df, return_scaler=True)
-        assert np.all( np.abs(normalized.mean()[1:]) < 1e-14 ) 
+        normalized, scaler = lp.helpers.normalize(df, return_scaler=True)
+        assert np.all( np.abs(normalized.mean()[1:]) < 1e-15 ) 
 
         unnormalized = normalized * np.sqrt(scaler.var_) + scaler.mean_
-        assert np.max( np.abs(df.values-unnormalized.values) ) < 1e-14
+        assert np.max( np.abs(df.values-unnormalized.values) ) < 1e-15
         
 
 
@@ -39,11 +40,11 @@ if __name__ == "__main__":
                       data=arr)
        
     ## Lag using a dictionary
-    lagged = helpers.lag(df, { "x" : [0,2,3], "y" : [0,3], "z" : [0,1] } )
+    lagged = ls.helpers.lag(df, { "x" : [0,2,3], "y" : [0,3], "z" : [0,1] } )
     print( lagged )
 
     ## Lag using an integer
-    lagged = helpers.lag(df, 3)
+    lagged = ls.helpers.lag(df, 3)
     print( lagged )
 
 
