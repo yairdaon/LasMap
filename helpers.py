@@ -60,8 +60,15 @@ def lag(df,
 ## Add noise #################################
 ##############################################
 def add_noise(df,
-              sig):
-   
+              sig=.1):
+    
+    '''Add centered iid Gaussian noise with standard deviation sig to the
+    dataframe df. Note that we implicitly assume data is normalized
+    (hence the uniform noise amplitude, which would be unfit had the
+    data not been normalized) and that there is no time column - time is
+    assumed to be the index of the dataframe.
+
+    '''
     return df + np.random.normal(0,sig,df.shape)
         
 ##############################################

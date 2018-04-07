@@ -8,26 +8,43 @@ import matplotlib.pyplot as plt
 
 import helpers
 import simplex
+import comp
+
+## For reproducibility purposes
+np.random.seed(89519241)
 
 ## Read entire data
-df = pd.read_csv("~/lasmap/huisman/huisman.csv",
+raw = pd.read_csv("~/lasmap/huisman/raw_noiseless_huisman.csv",
                  index_col="time")
+raw = raw.drop(["R1", "R2", "R3"], axis=1 )
 
-df["N3+N5"] = df["N3"] + df["N5"]
-df["N2+N4"] = df["N2"] + df["N4"]
+raw["N3+N5"] = raw["N3"] + raw["N5"]
+raw["N2+N4"] = raw["N2"] + raw["N4"]
 
-## Normalize
-df = helpers.normalize(df)
+## Normalize, ***then*** add noise (with prescribed standard
+## deviation).
+std = 0.1
+df = helpers.add_noise(helpers.normalize(raw), std)
 
-## Restrict data, because we don't want to use ALL of it. Huisman data
-## goes from 10 to 6000, in increments of 10. Hence length of data
-## frame is 600. In this region, N2 is approximately constant.
-cut = df.loc[3550:3790]
+## In this region, N2 is approximately constant.
+N2_const = df.loc[3550:3790]
+
+## Restrict data. If we use all data, then the "true" nature of the
+## system is revealed: the embedding dimension should be 8 (five
+## species + 3 abiotic variables). ***Skill actually peaks at
+## 5-6***. This can be seen by commenting the line below and setting std
+## to zero. We imitate the case where time series is too short and so
+## the embedding dimension seems smaller than it really is.
+df = df.loc[1000:2500]
+
+## These are the variables of interest. These are coupled (i.e. are
+## influenced by both "lobes")
+coupled = ["N2+N4", "N3+N5", "N1"]
 
 ################################################################
 ## Plot all time series on all of their time span.
 ################################################################
-for ind,col in enumerate(df.columns):
+for ind, col in enumerate(df.columns):
 
     series = df[col]
     time   = df.index
@@ -43,12 +60,12 @@ plt.close()
 ## Plot all time series on the restricted region, where N2 is
 ## approximately constant
 ################################################################
-for ind, col in enumerate(cut.columns):
+for ind, col in enumerate(N2_const.columns):
 
-    series = cut[col]
-    time   = cut.index
+    series = N2_const[col]
+    time   = N2_const.index
 
-    plt.subplot( len(cut.columns), 1, ind+1 )
+    plt.subplot( len(N2_const.columns), 1, ind+1 )
     plt.plot(time, series)
     plt.ylabel( col )
     
@@ -61,7 +78,7 @@ plt.close()
 ######################################################################
 Es = range(1,11)
 rhos = np.empty( len(Es) )
-for variable in df.columns:
+for variable in coupled:
     print variable
     uni = pd.DataFrame(data=df[variable],
                        columns=[variable],
@@ -77,3 +94,10 @@ for variable in df.columns:
     plt.savefig("/home/yair/lasmap/huisman/pix/python/" + variable + "_skill_full.png")
     plt.close()
 
+
+## Bottom line(s): N1 shows peak predictability ( rho ~ 0.8 ) with
+## embedding dimension E = 3. For N2+N4 peak is at E = 2 (rho >
+## 0.65). For N3+N5, rho peaks at E = 6.
+
+## Let us save this data for further analysis.
+df.to_csv("~/lasmap/huisman/noisy_truncated_huisman.csv")

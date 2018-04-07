@@ -61,8 +61,8 @@ def univariate(lib,
     ## Preallocate the predicted data frame. We will later need to
     ## shift the data so that obs and pred are aligned with it.
     ret = pd.DataFrame(index=obs.index,
-                             columns=["pred"],
-                             data=np.full(len(obs), np.nan) )
+                       columns=["pred"],
+                       data=np.full(len(obs), np.nan) )
     
     for row_index, row_data in block.iterrows():
         
@@ -76,8 +76,8 @@ def univariate(lib,
                                             row_data.values,
                                             num_nn=E+1)
 
-    ## As promised above, we shift the data so that obs and pred are
-    ## aligned with the time index.
+    ## As promised above, we shift the data so that pred is aligned
+    ## with the time index.
     ret = ret.shift(tp)
 
     ## Set the observations to be the truth.
@@ -179,19 +179,22 @@ def generic(data,
     obs = obs[keep]
     data = data[keep]
 
-    ## Row distances from x. Calculate norm by summing over axis #1.
+    ## Row distances from x. Calculate norm by summing over axis #1
+    ## which means Sum_j a_ij, in standard linear algebraic terms.
     dist = np.linalg.norm(data - x, axis=1)
 
     ## Get the num_nn points with least distance. 
     ind = np.argsort(dist)[0:num_nn]
    
     ## Prediction is a weighted mean of nearest neighbours'
-    ## observations.
-    ##pdb.set_trace()
-    obs  = obs[ind]
-    
-    w = np.maximum(np.exp(-dist[ind] / np.min(dist) ), 1e-6 ) 
-    
+    ## observations:
+    obs  = obs[ind] ## NN observations
+    w = np.exp(-dist[ind] / np.min(dist) ) ## NN weights
+
+    ## See docs above.
+    w = np.maximum( w, , 1e-6 ) 
+
+    ## Simplex predicts as follows:
     pred = np.sum( w * obs ) / np.sum( w )
     
     return pred

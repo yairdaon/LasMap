@@ -4,7 +4,7 @@ library(deSolve)
 set.seed( 19 )
 
 ## clean directory from previous plots
-system("rm -f huisman.pdf" )
+## system("rm -f huisman.pdf" )
 
 gen_Huisman <- function(n, tau = 10)
 {
@@ -57,50 +57,52 @@ gen_Huisman <- function(n, tau = 10)
 }
 
 
-if( !file.exists("huisman.csv") ) {
+if( !file.exists("raw_noiseless_huisman.csv") ) {
 
     ## If no simulation data exists, generate it
     print( "Generating Huisman data" )
-    huisman <- gen_Huisman(600)
+    huisman <- gen_Huisman(1500)
     write.csv(huisman,
-              "huisman.csv",
+              "raw_noiseless_huisman.csv",
               quote = FALSE,
               row.names = FALSE)
 } else {
-    huisman <- read.csv("huisman.csv",
+    huisman <- read.csv("raw_noiseless_huisman.csv",
                         header=TRUE)
 }
-huisman$time <- NULL
-huisman <- huisman[ 300:500, ]
-print( names(huisman) )
 
-## Normalize and add noise 
-huisman <- data.frame(scale(huisman)) + runif(prod(dim(huisman))) * sqrt(0.1)
+## huisman$time <- NULL
+## huisman <- huisman[ 300:500, ]
+## print( names(huisman) )
 
-pdf("huisman.pdf"  )
-old.par <- par(mfrow=c(2, 3))
-cols <- c("N1", "N2", "N3", "N4", "N5")
-for( col in cols )
-{
-    ts <- huisman[, col]
-    print( ts[1:4] )
-    ## Run simplex with CV
-    output <- simplex(ts,
-                      stats_only = TRUE,
-                      silent = TRUE)
+## ## Normalize and add noise 
+## huisman <- data.frame(scale(huisman)) + runif(prod(dim(huisman))) * sqrt(0.1)
+
+## pdf("huisman.pdf"  )
+## old.par <- par(mfrow=c(2, 3))
+## cols <- c("N1", "N2", "N3", "N4", "N5")
+## for( col in cols )
+## {
+##     ts <- huisman[, col]
+##     print( ts[1:4] )
+##     ## Run simplex with CV
+##     output <- simplex(ts,
+##                       stats_only = TRUE,
+##                       silent = TRUE)
     
-    ## Plot
-    plot(output$E,
-         output$rho,
-         type = "l",
-         xlab = "E",
-         ylab = "rho",
-         main = paste0("Univariate prediction for ", col ) )    
-    grid(ny = NA,
-         col = "red",
-         lty = 1)
-    ## print(paste0("Var ", col, " best E ", which(output$E == max(output$E)) ) ) 
-}
-par(old.par)
-## plot(
-dev.off()
+##     ## Plot
+##     plot(output$E,
+##          output$rho,
+##          type = "l",
+##          xlab = "E",
+##          ylab = "rho",
+##          main = paste0("Univariate prediction for ", col ) )    
+##     grid(ny = NA,
+##          col = "red",
+##          lty = 1)
+##     ## print(paste0("Var ", col, " best E ", which(output$E == max(output$E)) ) ) 
+## }
+## par(old.par)
+## ## plot(
+## dev.off()
+          
