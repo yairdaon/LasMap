@@ -1,12 +1,16 @@
-#!/usr/bin/python
 import numpy as np
 import pandas as pd
 from math import exp as exp
 import math
 import pdb
 import pytest
+import os
 
 from lasmap import simplex
+
+## Making sure directory where we save data exists
+if not os.path.exists("tests/data"):
+    os.makedirs("tests/data")
     
 def test_generic_first():
     
@@ -58,6 +62,19 @@ def simple_data():
     v = v / np.linalg.norm(v) * 3.
     data[3,:] = x + v
     
+    ## We want to comare our results with the rEDM package, so we save the
+    ## data:
+    arr          = np.empty((5,4))
+    arr[0:4,0:3] = data
+    arr[0:4,  3] = obs
+    arr[4  ,0:3] = x
+    columns = ["V1", "V2", "V3", "target" ]
+    df = pd.DataFrame(columns=columns,
+                      data=arr)
+
+    df.to_csv("tests/data/simple_data.csv",
+              index=False)
+
     return {"data" : data, "x": x, "obs": obs }
     
 def test_data_is_OK(simple_data):
@@ -71,7 +88,7 @@ def test_data_is_OK(simple_data):
     assert abs(np.linalg.norm(data[1,:]-x) - 0.5) < 1e-14
     assert abs(np.linalg.norm(data[2,:]-x) - 2.0) < 1e-14
     assert abs(np.linalg.norm(data[3,:]-x) - 3.0) < 1e-14
-
+    
 def test_generic_two_nearest_neighbours(simple_data):
 
     ## Unpack
@@ -92,19 +109,9 @@ def test_generic_two_nearest_neighbours(simple_data):
     ## They need to be equal, at least up to numerical errors.
     assert abs(func - calc) < 1e-14
 
-    # ## We want to comare our results with the rEDM package, so we save the
-    # ## data:
-    # arr          = np.empty((5,4))
-    # arr[0:4,0:3] = data
-    # arr[0:4,  3] = obs
-    # arr[4  ,0:3] = x
-    # arr[4  ,  3] = calc
-    # columns = ["V1", "V2", "V3", "target" ]
-    # df = pd.DataFrame(columns=columns,
-    #                   data=arr)
-    # df.to_csv("tests/data/2NN.csv",
-    #           index=False)
-
+    fl = open("tests/data/2NN.txt","w") 
+    fl.write(str(calc) + "\n" )
+    
 def test_generic_three_nearest_neighbours(simple_data):
 
     ## Unpack
@@ -122,13 +129,8 @@ def test_generic_three_nearest_neighbours(simple_data):
     ## They better be equal...
     assert abs(func - calc) < 1e-14
 
-    # ## Save this for rEDM, only changing the result.
-    # df.at[4,"target"]=calc
-    
-    # df.to_csv("tests/data/3NN.csv",
-    #           index=False)
-
-
+    fl = open("tests/data/3NN.txt", "w") 
+    fl.write(str(calc) + "\n" )
 
 @pytest.fixture
 def make_random_set_data():
