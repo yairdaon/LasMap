@@ -192,7 +192,7 @@ def generic(data,
     w = np.exp(-dist[ind] / np.min(dist) ) ## NN weights
 
     ## See docs above.
-    w = np.maximum( w, , 1e-6 ) 
+    w = np.maximum( w, 1e-6 ) 
 
     ## Simplex predicts as follows:
     pred = np.sum( w * obs ) / np.sum( w )

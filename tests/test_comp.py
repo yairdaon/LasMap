@@ -4,14 +4,13 @@ import pandas as pd
 import pdb
 import sys
 
-import comp
+from lasmap import comp
 
-## Test lasso-map
-if __name__ == "__main__":
+def test_lasso_map():
 
     ## Test many a times we actually get the correct number of
     ## non-zero coefficients
-    for i in range( 1500 ):
+    for i in range( 100 ):
         ## Design matrix (data frame)
         # X = np.array([ [1,3,4,6,5,6],
         #                [4,3,6,9,0,3],

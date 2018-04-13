@@ -4,6 +4,8 @@ import pdb
 import math
 from sklearn.linear_model import Lasso as Lasso
 
+import helpers
+
 ###############################################
 ## Lasso s-map ################################
 ###############################################
@@ -18,7 +20,7 @@ def lasso_map(data,
     returns a boolean vector, stating which variables are active in
     prediction of the observable for the point and which are not.
 
-    data  - lagged block - a numpy array, T by n
+    data  - (lagged) block - a numpy array, T by n
     obs   - observables - a numpy array, length T.
     x     - target - numpy array, length n.
     E     - embedding dimension, number of vars we want to use. Natural number
@@ -33,7 +35,7 @@ def lasso_map(data,
     weights = np.exp( -theta * dist/np.mean(dist) )
 
     ## Reweight dataframe and observables
-    data  = (data.T * weights).T
+    data  = (data.T * weights).T ## TOD: optimize this using einsum
     obs = obs * weights
 
     ## Initialize the Lasso object and fit the data.
@@ -99,10 +101,9 @@ def get_betas(var,
     lasso_obj.alpha = 1
       
     ## Observations are one time step ahead
-    obs = pd.DataFrame(data = helpers.make_obs(df,var+"_0"),
-                       index = df["time"],
-                       columns = [var + "_p1"])
-      
+    obs = helpers.extend_obs(df, var + "_0")
+    obs = obs[var+"_0"]
+    
     # ## Find indices of rows that don't have NaNs
     # no_nans = ~np.logical_or(df.isnull().any(axis=1), obs.isnull() )
 

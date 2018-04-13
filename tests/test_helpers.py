@@ -4,11 +4,9 @@ import pandas as pd
 import pdb
 import sys
 
-import helpers
+from lasmap import helpers
 
-## Test Normalize
-if __name__ == "__main__":
-
+def test_normalize():
         arr = np.array([ [1,3,4],
                          [4,3,6],
                          [2,4,5],
@@ -26,9 +24,8 @@ if __name__ == "__main__":
         assert np.max( np.abs(df.values-unnormalized.values) ) < 1e-15
         
 
-
-## Test Lag
-if __name__ == "__main__":
+## TODO: Maybe I should actually make a test of this???
+def test_lag():
     arr = np.array([ [1,3,4],
                      [4,3,6],
                      [2,4,5],

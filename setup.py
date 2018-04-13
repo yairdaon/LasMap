@@ -5,5 +5,5 @@ setup(name="lasmap",
       py_modules=["helpers", "simplex", "comp"],
       # packages=['src'],
       author="Yair Daon",
-      author_email="yair.daon@gmail.com",
+      author_email="fsirt.lsat@gmail.com",
       url="https://github.com/yairdaon/lasmap")
