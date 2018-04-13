@@ -1,10 +1,6 @@
-#!/usr/bin/Rscript
 library( "rEDM" )
-## source( "helpers/helper.r" )
-## source( "helpers/plotting.r" )
-## source( "helpers/mve.r" )
 
-df <- read.csv("~/lasmap/huisman/huisman.csv",
+df <- read.csv("huisman/noisy_truncated_huisman.csv",
                header = TRUE,
                sep = ",",
                na.strings = c( "NA", "NaN" ),
@@ -21,7 +17,7 @@ for( variable in names( df ) )
 {
     print( variable )
     output <- simplex(df[,variable])
-    png(paste0("~/lasmap/huisman/pix/R/", variable, "_skill_full.png"))
+    png(paste0("huisman/pix/R/", variable, "_skill_full.png"))
     plot(output$E, output$rho, type = "l",
          xlab = "Embedding Dimension (E)",
          ylab = "Forecast Skill (rho)")

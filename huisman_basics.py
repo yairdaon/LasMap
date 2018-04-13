@@ -5,16 +5,20 @@ import pdb
 import math
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import os
 
-import helpers
-import simplex
-import comp
+import lasmap.helpers as helpers
+import lasmap.simplex as simplex
+
+if not os.path.exists("huisman/pix"):
+    os.makedirs("huisman/pix/python")
+    os.makedirs("huisman/pix/R")
 
 ## For reproducibility purposes
 np.random.seed(89519241)
 
 ## Read entire data
-raw = pd.read_csv("~/lasmap/huisman/raw_noiseless_huisman.csv",
+raw = pd.read_csv("huisman/raw_noiseless_huisman.csv",
                  index_col="time")
 raw = raw.drop(["R1", "R2", "R3"], axis=1 )
 
@@ -53,7 +57,7 @@ for ind, col in enumerate(df.columns):
     plt.plot(time, series)
     plt.ylabel( col )
     
-plt.savefig("/home/yair/lasmap/huisman/pix/python/full_time_series.png")
+plt.savefig("huisman/pix/python/full_time_series.png")
 plt.close()
 
 ################################################################
@@ -69,7 +73,7 @@ for ind, col in enumerate(N2_const.columns):
     plt.plot(time, series)
     plt.ylabel( col )
     
-plt.savefig("/home/yair/lasmap/huisman/pix/python/restricted_time_series.png")
+plt.savefig("huisman/pix/python/restricted_time_series.png")
 plt.close()
 
 ######################################################################
@@ -91,7 +95,7 @@ for variable in coupled:
     plt.plot(Es, rhos)
     plt.ylabel("Prediction skill - rho")
     plt.xlabel("Embedding dimension - E")
-    plt.savefig("/home/yair/lasmap/huisman/pix/python/" + variable + "_skill_full.png")
+    plt.savefig("huisman/pix/python/" + variable + "_skill_full.png")
     plt.close()
 
 
@@ -100,4 +104,4 @@ for variable in coupled:
 ## 0.65). For N3+N5, rho peaks at E = 6.
 
 ## Let us save this data for further analysis.
-df.to_csv("~/lasmap/huisman/noisy_truncated_huisman.csv")
+df.to_csv("huisman/noisy_truncated_huisman.csv")

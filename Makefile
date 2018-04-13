@@ -7,6 +7,10 @@ tests:
 	pytest
 	Rscript tests/test_simplex.r	
 
-huisman: 
-	python huisman/basics.py
-	Rscript huisman/basics.r
+huisman:
+	# huisman/raw_noiseless_huisman.csv
+	python huisman_basics.py
+	Rscript huisman_basics.r
+
+# huisman/raw_noiseless_huisman.csv: huisman/huisman.r
+# 	Rscript huisman/huisman.r
