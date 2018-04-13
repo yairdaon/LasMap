@@ -4,7 +4,8 @@ clean:
 	rm -rvf */*.pyc */*~ active*.csv huisman/pix/ __pycache__* tests/__pycache__* lasmap.egg-info tests/data
 
 tests:
-	pytest
+	pytest -x --pdb
+	# pytest --pdb maxfail=3
 	Rscript tests/test_simplex.r	
 
 huisman:
