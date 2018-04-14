@@ -10,15 +10,15 @@ import os
 import lasmap.helpers as helpers
 import lasmap.simplex as simplex
 
-if not os.path.exists("huisman/pix"):
-    os.makedirs("huisman/pix/python")
-    os.makedirs("huisman/pix/R")
+if not os.path.exists("Huisman/pix"):
+    os.makedirs("Huisman/pix/python")
+    os.makedirs("Huisman/pix/R")
 
 ## For reproducibility purposes
 np.random.seed(89519241)
 
 ## Read entire data
-raw = pd.read_csv("huisman/raw_noiseless_huisman.csv",
+raw = pd.read_csv("Huisman/raw_noiseless_huisman.csv",
                  index_col="time")
 raw = raw.drop(["R1", "R2", "R3"], axis=1 )
 
@@ -57,7 +57,7 @@ for ind, col in enumerate(df.columns):
     plt.plot(time, series)
     plt.ylabel( col )
     
-plt.savefig("huisman/pix/python/full_time_series.png")
+plt.savefig("Huisman/pix/python/full_time_series.png")
 plt.close()
 
 ################################################################
@@ -73,7 +73,7 @@ for ind, col in enumerate(N2_const.columns):
     plt.plot(time, series)
     plt.ylabel( col )
     
-plt.savefig("huisman/pix/python/restricted_time_series.png")
+plt.savefig("Huisman/pix/python/restricted_time_series.png")
 plt.close()
 
 ######################################################################
@@ -95,7 +95,7 @@ for variable in coupled:
     plt.plot(Es, rhos)
     plt.ylabel("Prediction skill - rho")
     plt.xlabel("Embedding dimension - E")
-    plt.savefig("huisman/pix/python/" + variable + "_skill_full.png")
+    plt.savefig("Huisman/pix/python/" + variable + "_skill_full.png")
     plt.close()
 
 
@@ -103,5 +103,7 @@ for variable in coupled:
 ## embedding dimension E = 3. For N2+N4 peak is at E = 2 (rho >
 ## 0.65). For N3+N5, rho peaks at E = 6.
 
-## Let us save this data for further analysis.
-df.to_csv("huisman/noisy_truncated_huisman.csv")
+## Let us save this data for further analysis. This dataframe has
+## Huisman data that is normalized, noisy and truncated. Or, in a
+## word: processed.
+df.to_csv("Huisman/processed_huisman.csv")

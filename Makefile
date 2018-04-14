@@ -1,7 +1,7 @@
 .PHONY: huisman tests
 
 clean:
-	rm -rvf */*.pyc */*~ active*.csv huisman/pix/ __pycache__* tests/__pycache__* lasmap.egg-info tests/data
+	rm -rvf */*.pyc */*~ active*.csv Huisman/pix/ __pycache__* tests/__pycache__* lasmap.egg-info tests/data
 
 tests:
 	pytest -x --pdb
