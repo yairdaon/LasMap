@@ -15,15 +15,14 @@ def lasso_map(data,
               E,
               theta=1,
               lasso_obj=Lasso(warm_start=True) ):
-    '''
-    This function takes a data array, a point and observables and
+    '''This function takes a numpy array, a point and observables and
     returns a boolean vector, stating which variables are active in
     prediction of the observable for the point and which are not.
 
-    data  - (lagged) block - a numpy array, T by n
+    data  - (lagged) block - a pandas data frame, T by n
     obs   - observables - a numpy array, length T.
     x     - target - numpy array, length n.
-    E     - embedding dimension, number of vars we want to use. Natural number
+    E     - embedding dimension, number of active variables we want to use. Natural number
     theta - nonlinearity parameter. Real number
 
     '''
@@ -35,7 +34,7 @@ def lasso_map(data,
     weights = np.exp( -theta * dist/np.mean(dist) )
 
     ## Reweight dataframe and observables
-    data  = (data.T * weights).T ## TOD: optimize this using einsum
+    data  = (data.T * weights).T ## TODO: maybe optimize this using einsum
     obs = obs * weights
 
     ## Initialize the Lasso object and fit the data.
@@ -87,6 +86,8 @@ def lasso_map(data,
 
 def get_betas(var,
               df,
+              E=3,
+              theta=1,
               lasso_obj=Lasso(warm_start=True)):
     
     '''df is assumed lagged and normalized. Any time/date/etc. column is
@@ -101,47 +102,36 @@ def get_betas(var,
     lasso_obj.alpha = 1
       
     ## Observations are one time step ahead
-    obs = helpers.extend_obs(df, var + "_0")
-    obs = obs[var+"_0"]
-    
-    # ## Find indices of rows that don't have NaNs
-    # no_nans = ~np.logical_or(df.isnull().any(axis=1), obs.isnull() )
+    obs = helpers.get_obs(df, var)
 
-    # ## Keep only rows without NaNs
-    # obs = obs[no_nans]
-    # trim = df[no_nans]
-    
-    ## Preallocate. 
-    betas = np.empty(trim.shape,
-                     dtype=np.bool_)
-
-    index = 0
+    ## Remove all rows with nans, lagged and future observations
+    df = helpers.remove_nan_rows( df )
+    pdb.set_trace()
+    ## Separate the observations from the data
+    obs = df[ var + "_p1"  ]
+    df = df.drop([ var + "_p1" ], axis=1 )
+    pdb.set_trace()
+    ## Preallocate. According to StackOverflow, this is inferior
+    ## (speedwise) to holding rows in a list, then creating the
+    ## dataframe. This can be optimized but for now -fuckit. See
+    ## https://stackoverflow.com/questions/18771963/pandas-efficient-dataframe-set-row
+    betas = pd.DataFrame(data = np.empty(df.shape, dtype=np.bool_),
+                         columns = df.columns,
+                         index = df.index)
+    pdb.set_trace()
     ## Iterate over points, find best predictors and store them
-    for j , row in trim.iterrows():
-        print( j )
-        print( index )
-        
-        x = np.array(row)
-        beta = lasso_map(trim,
-                         obs,
-                         x,
-                         E=3,
-                         theta=1,
-                         lasso_obj=lasso_obj )
-        
-        betas[index, :] = beta
-        index = index + 1
-        if index % 10 == 0:
-            print( "Cross validating. Variable " + str(var) + " using row " + str(index) + "."  )
-        
+    for ind, row in df.iterrows():
 
-    betas = pd.DataFrame(data=betas,
-                         columns=df.columns,
-                         index=trim["time"])
-    
-    betas.to_csv("data/active_" + var + ".csv",index_label="time")
+        beta = lasso_map(df.drop(ind, axis=0).values,
+                         obs.drop(ind, axis=0).values,
+                         row.values,
+                         E,
+                         theta,
+                         lasso_obj )
+        
+        betas.at[ind] = beta
+        
+        print( "Cross validating. Variable " + str(var) + " using time stamp " + str(ind) + "."  )
+    pdb.set_trace()    
     return betas
-
-## TESTS??????????????????????????
-
 

@@ -1,8 +1,6 @@
 import numpy as np
 import pandas as pd
 from math import exp as exp
-import math
-import pdb
 import pytest
 import os
 
@@ -185,7 +183,7 @@ def random_univariate_data():
     n = 12
     df = pd.DataFrame(index=np.arange(n)*10,
                       columns=["A"],
-                      data=np.random.randn(n))
+                      data=np.random.randint(-2*n,2*n,n))
     return df
 
 def test_univariate(random_univariate_data):

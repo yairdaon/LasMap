@@ -1,6 +1,6 @@
 library( "rEDM" )
 
-## Test 2 nearest neighbours
+print( "Comparing 2 nearest neighbours, R vs Python.")
 data <- read.csv("tests/data/simple_data.csv",
                  header = TRUE)
 out_2NN <- block_lnlp(data,
@@ -19,7 +19,7 @@ py <- read.table("tests/data/2NN.txt")[ , "V1" ]
 stopifnot( all.equal(R, py, tolerance=1e-10 ) ) ## Ensure 2NN results agree
 
 
-## Test 3 nearest neighbours
+print( "Comparing 3 nearest neighbours, R vs Python.")
 data <- read.csv("tests/data/simple_data.csv",
                  header = TRUE)
 out_3NN <- block_lnlp(data,
@@ -38,7 +38,7 @@ py <- read.table("tests/data/3NN.txt")[ , "V1" ]
 stopifnot( all.equal(R, py, tolerance=1e-10 ) ) ## Ensure 3NN results agree
 
 
-## Test sets
+print( "Comparing set predictions, R vs Python.")
 data <- read.csv("tests/data/generic_sets.csv",
                  header = TRUE)
 out_sets <- block_lnlp(data,
@@ -56,7 +56,7 @@ stopifnot( all.equal(out_sets[ , "obs"],
                      out_sets[ , "pred"],
                      tolerance=1e-10 ) ) ## Ensure sets results agree
 
-## Test univariate
+print( "Comparing univariate prediction, R vs Python.")
 py <- read.csv("tests/data/univariate.csv",
                header = TRUE,
                na.strings=c("NaN"))
@@ -73,7 +73,13 @@ ret <- merge(x=py,
              all=FALSE,
              suffixes=c("-Python", "-R") )
 
-stopifnot( all.equal(ret[ , "pred-Python"],
-                     ret[ , "pred-R"],
-                     tolerance=1e-10 ) ) ## Ensure univariate results agree
-
+comparison <- all.equal(ret[ , "pred-Python"],
+                        ret[ , "pred-R"],
+                        tolerance=1e-10 )
+print( comparison )
+print( ret )
+## if( !comparison )
+## {
+##     print( ret )
+##     stop("Test failed, see above printout.")
+## }

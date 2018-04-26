@@ -1,10 +1,77 @@
 import numpy as np
 import pandas as pd
-import pdb
-import sys
+import pytest
 
 from lasmap import helpers
 
+@pytest.fixture
+def nan_data():
+        return np.array([ [np.nan, 3,      np.nan ],
+                          [4,      3,      6      ],
+                          [2,      4,      5      ],
+                          [8,      np.nan, 0      ],
+                          [2,      5,      6      ],
+                          [1,      np.nan, 8      ] ], dtype = np.float64 )
+
+# @pytest.fixture
+# def no_nan_data():
+#         return np.array([ [4,      3,      6     ],
+#                           [2,      4,      5     ],
+#                           [2,      5,      6     ]], dtype = np.float64 )
+
+@pytest.fixture
+def no_nan_rows_data():
+        return np.array( [1,2,4], dtype = np.int32 )
+
+@pytest.fixture
+def nan_obs():
+        return np.array( [3, 5, np.nan, 2, 7, np.nan] )
+
+@pytest.fixture
+def no_nan_rows_data_and_obs():
+        return np.array( [1,4], dtype = np.int32 )
+
+        
+def test_no_nan_rows_array(nan_data,
+                           no_nan_rows_data):
+        
+        out_no_nan_rows = helpers.no_nan_rows(nan_data)
+        np.testing.assert_equal( out_no_nan_rows, no_nan_rows_data )
+        
+        
+def test_no_nan_rows_dataframe(nan_data,
+                               no_nan_rows_data):
+
+        df = pd.DataFrame(nan_data)
+        out_no_nan_rows = helpers.no_nan_rows(df)
+        np.testing.assert_equal( out_no_nan_rows, no_nan_rows_data )
+        
+def test_no_nan_rows_array_with_obs(nan_data,
+                                    no_nan_rows_data,
+                                    nan_obs,
+                                    no_nan_rows_data_and_obs):
+
+        out_no_nan_rows = helpers.no_nan_rows(nan_data, nan_obs)
+        np.testing.assert_equal( out_no_nan_rows, no_nan_rows_data_and_obs )
+        
+        
+# def test_no_nan_rows_dataframe_with_obs(nan_data, no_nan_rows_data):
+
+#         df = pd.DataFrame(nan_data)
+#         out_no_nan_rows = helpers.no_nan_rows(df)
+#         np.testing.assert_equal( out_no_nan_rows, no_nan_rows_data )
+        
+# def test_clean_nans(nan_data):
+
+#         df = pd.DataFrame( data = nan_data["arr_arr"] )
+#         df = helpers.remove_nan_rows(df)
+        
+#         no_nans = np.array([ [4,      3,      6     ],
+#                              [2,      4,      5     ],
+#                              [2,      5,      6     ]], dtype = np.float64 )
+                         
+#         assert np.all( df.values == no_nans )
+                         
 def test_normalize():
         arr = np.array([ [1,3,4],
                          [4,3,6],

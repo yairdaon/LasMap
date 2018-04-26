@@ -3,9 +3,6 @@ library(rEDM)
 library(deSolve)
 set.seed( 19 )
 
-## clean directory from previous plots
-## system("rm -f huisman.pdf" )
-
 gen_Huisman <- function(n, tau = 10)
 {
     ## initial values & coefficients (Huisman & Weissing 2001, Fig. 2)

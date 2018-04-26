@@ -4,16 +4,51 @@ import pdb
 import math
 
 from sklearn.linear_model import Lasso as Lasso
-from sklearn import preprocessing as prep 
+from sklearn import preprocessing as prep
+
+def remove_nan_rows(data, obs=None):
+
+    ind = no_nan_rows(data, obs)
+    
+    if isinstance(data, pd.DataFrame):
+        no_nan_data = data[ind, :]
+    elif isinstance(data, np.ndarray):
+        no_nan_data = data.iat[ind]
+    else:
+        raise ValueError( "data has to be either numpy array or pandas data frame." )
+
+    if not obs is None:
+        return no_nan_data, obs[ind] 
+
+    return no_nan_data
+    
+def no_nan_rows(data, obs=None):
+
+    '''data is either a 2D numpy array or a pandas data frame.'''
+    
+    ## Find indices of rows that have NaNs
+    data_nan_rows = np.isnan(data).any(axis=1)
+    
+    if obs is None:
+        nan_rows = data_nan_rows
+    else:
+        obs_nan_rows = np.isnan(obs)
+        nan_rows     = np.logical_or( data_nan_rows, obs_nan_rows )
+        
+    no_nan_rows = ~nan_rows
+
+    ## Get the indices of rows where data (and obs) are nan free.
+    return np.flatnonzero( no_nan_rows )
+    
     
 ##############################################
 ## Add observations column ###################
 ##############################################
-def extend_obs(df,
-               varName,
-               tp=1):
-    '''
-    Extends data frame with a column of future (tp) observations.
+def get_obs(df,
+            varName,
+            tp=1):
+    '''Get observation (i.e. future, "_p1") dataframe from an existing
+    data frame.
 
     varName is assumed given as X, y, chlA etc. and *not* X_0, y_0,
     chlA_0.
@@ -24,12 +59,11 @@ def extend_obs(df,
     '''
     assert tp > 0
 
-    ## Shift the zero lagged variable
-    obs = df[varName + "_0"].shift(-tp) 
-
-    ## Add / append the shifted variable to the data frame
-    df[varName + "_p" + str(tp)] = obs
-    return df
+    obs = pd.DataFrame(data = df[varName + "_0"].shift(-tp).values,
+                       index = df.index,
+                       columns = [varName + "_p" + str(tp)] )
+                       
+    return obs
 
 ##############################################
 ## Lagging function ##########################

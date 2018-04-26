@@ -1,4 +1,10 @@
-.PHONY: huisman tests
+all:
+	make clean
+	# sudo pip install -e .
+	make tests
+	make huisman
+
+.PHONY: huisman tests all
 
 clean:
 	rm -rvf */*.pyc */*~ active*.csv Huisman/pix/ __pycache__* tests/__pycache__* lasmap.egg-info tests/data

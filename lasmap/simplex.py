@@ -32,14 +32,15 @@ def univariate(lib,
     assumed that observations are equally spaced and ordered.
 
     '''
-
+    
     ## We verify data frame only has one variable. Consequently, this
     ## is the variable name and the one that is lagged.
     assert len(lib.columns) == 1
     varName = lib.columns[0]
 
-    ## Prediction of the past and present is not allowed. It does not
-    ## make much sense either.
+    ## Prediction of the past and present is not allowed. Whether or
+    ## not this makes sense is subject to intense debate among
+    ## experts.
     assert tp > 0
     
     target = varName + "_p" + str(tp)
@@ -47,35 +48,28 @@ def univariate(lib,
     ## Create lagged block
     block = helpers.lag(lib, E)
 
-    ## Add an observation ( "_p1" ) column.
-    block = helpers.extend_obs(block, varName, tp=tp)
+    ## Create an observation ( "_p1" ) data frame.
+    obs = helpers.get_obs(block, varName, tp=tp)
 
-    ## Keep the observables as a separate data frame...
-    obs = block[target]
-    
-    ## ... and remove from the block
-    block = block.drop([target],axis=1)
-
-    predictors = block.columns
-    
-    ## Preallocate the predicted data frame. We will later need to
+    ## Preallocate the returned data frame. We will later need to
     ## shift the data so that obs and pred are aligned with it.
     ret = pd.DataFrame(index=obs.index,
                        columns=["pred"],
                        data=np.full(len(obs), np.nan) )
+
     
     for row_index, row_data in block.iterrows():
-        
-        ## Remove current row from the data fed to the generic method.
-        tmp_block = block.drop(row_index)
-        tmp_obs   = obs.drop(row_index)
+
+        ## If this returns a copy and not a view, it is wasteful!!
+        tmp_block = block.drop(row_index, axis=0 )
+        tmp_obs   = obs.drop  (row_index, axis=0 )
 
         ## Indexing by time stamp, so use at and *not* iat.
         ret.at[row_index, "pred"] = generic(tmp_block.values,
-                                            tmp_obs.values,
+                                            tmp_obs.values, 
                                             row_data.values,
                                             num_nn=E+1)
-
+        pdb.set_trace()
     ## As promised above, we shift the data so that pred is aligned
     ## with the time index.
     ret = ret.shift(tp)
@@ -163,10 +157,7 @@ def generic(data,
     if num_nn == 0:
         num_nn = len(x)+1
 
-    ## We keep the rows that are not nan in both arrays.
-    nan_obs  = np.isnan(obs) 
-    nan_data = np.isnan(data).any(axis=1) 
-    keep     = ~np.logical_or(nan_obs, nan_data) 
+    data, obs = helpers.remove_nan_rows(data,obs)
 
     ## If we have less valid data points (with observations) than the
     ## required number of nearest neighbours, we cannot make any
@@ -174,10 +165,6 @@ def generic(data,
     if np.sum( keep ) < num_nn:
         warnings.warn("Required NN " + str(num_nn) + " but only " + np.sum(keep) + " valid data points available. Return NaN." )
         return np.nan
-
-    ## After this, data should be valid and we can actually make a prediction!
-    obs = obs[keep]
-    data = data[keep]
 
     ## Row distances from x. Calculate norm by summing over axis #1
     ## which means Sum_j a_ij, in standard linear algebraic terms.
@@ -196,6 +183,6 @@ def generic(data,
 
     ## Simplex predicts as follows:
     pred = np.sum( w * obs ) / np.sum( w )
-    
+
     return pred
 

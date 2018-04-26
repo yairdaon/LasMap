@@ -13,7 +13,9 @@ import lasmap.simplex as simplex
 if not os.path.exists("Huisman/pix"):
     os.makedirs("Huisman/pix/python")
     os.makedirs("Huisman/pix/R")
+os.system("rm -f Huisman/pix/python/*")
 
+    
 ## For reproducibility purposes
 np.random.seed(89519241)
 
@@ -22,8 +24,8 @@ raw = pd.read_csv("Huisman/raw_noiseless_huisman.csv",
                  index_col="time")
 raw = raw.drop(["R1", "R2", "R3"], axis=1 )
 
-raw["N3+N5"] = raw["N3"] + raw["N5"]
-raw["N2+N4"] = raw["N2"] + raw["N4"]
+raw["N2+N3"] = raw["N2"] + raw["N3"]
+raw["N4+N5"] = raw["N4"] + raw["N5"]
 
 ## Normalize, ***then*** add noise (with prescribed standard
 ## deviation).
@@ -43,7 +45,7 @@ df = df.loc[1000:2500]
 
 ## These are the variables of interest. These are coupled (i.e. are
 ## influenced by both "lobes")
-coupled = ["N2+N4", "N3+N5", "N1"]
+coupled = ["N2+N3", "N4+N5", "N1"]
 
 ################################################################
 ## Plot all time series on all of their time span.
@@ -57,7 +59,7 @@ for ind, col in enumerate(df.columns):
     plt.plot(time, series)
     plt.ylabel( col )
     
-plt.savefig("Huisman/pix/python/full_time_series.png")
+plt.savefig("Huisman/pix/python/time_series.png")
 plt.close()
 
 ################################################################
@@ -105,5 +107,7 @@ for variable in coupled:
 
 ## Let us save this data for further analysis. This dataframe has
 ## Huisman data that is normalized, noisy and truncated. Or, in a
-## word: processed.
+## word: processed. It is ***not*** lagged and does not have an
+## observation (i.e. _p1) column. It ***does*** have summed columns
+## (i.e. N2+N3 and N4+N5).
 df.to_csv("Huisman/processed_huisman.csv")
