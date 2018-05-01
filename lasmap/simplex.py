@@ -69,7 +69,7 @@ def univariate(lib,
                                             tmp_obs.values, 
                                             row_data.values,
                                             num_nn=E+1)
-        pdb.set_trace()
+        
     ## As promised above, we shift the data so that pred is aligned
     ## with the time index.
     ret = ret.shift(tp)
@@ -157,13 +157,13 @@ def generic(data,
     if num_nn == 0:
         num_nn = len(x)+1
 
-    data, obs = helpers.remove_nan_rows(data,obs)
+    data, obs = helpers.remove_nan_rows(data, obs)
 
     ## If we have less valid data points (with observations) than the
     ## required number of nearest neighbours, we cannot make any
     ## prediction and return a NaN.
-    if np.sum( keep ) < num_nn:
-        warnings.warn("Required NN " + str(num_nn) + " but only " + np.sum(keep) + " valid data points available. Return NaN." )
+    if data.shape[0] < num_nn:
+        warnings.warn("Required NN " + str(num_nn) + " but only " + data.shape[0] + " valid data points available. Return NaN." )
         return np.nan
 
     ## Row distances from x. Calculate norm by summing over axis #1

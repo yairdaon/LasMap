@@ -9,19 +9,24 @@ from sklearn import preprocessing as prep
 def remove_nan_rows(data, obs=None):
 
     ind = no_nan_rows(data, obs)
-    
-    if isinstance(data, pd.DataFrame):
+    # pdb.set_trace()    
+    if isinstance(data, np.ndarray):
         no_nan_data = data[ind, :]
-    elif isinstance(data, np.ndarray):
-        no_nan_data = data.iat[ind]
+    elif isinstance(data, pd.DataFrame):
+        no_nan_data = data.iloc[ind]
     else:
         raise ValueError( "data has to be either numpy array or pandas data frame." )
 
-    if not obs is None:
-        return no_nan_data, obs[ind] 
-
-    return no_nan_data
-    
+    if obs is None:
+        return no_nan_data
+    else:
+        if isinstance(data, np.ndarray):
+            return no_nan_data, obs[ind]
+        elif isinstance(data, pd.DataFrame):
+            return no_nan_data, obs.iat[ind]
+        else:
+            raise ValueError( "obs has to be either numpy array or pandas data frame." )
+        
 def no_nan_rows(data, obs=None):
 
     '''data is either a 2D numpy array or a pandas data frame.'''
@@ -36,11 +41,12 @@ def no_nan_rows(data, obs=None):
         nan_rows     = np.logical_or( data_nan_rows, obs_nan_rows )
         
     no_nan_rows = ~nan_rows
-
-    ## Get the indices of rows where data (and obs) are nan free.
+    
+    ## Get the indices of rows where data (and obs) are nan free. We
+    ## cast to a tuple because a numpy array cannot be used to index a
+    ## numpy array.
     return np.flatnonzero( no_nan_rows )
-    
-    
+        
 ##############################################
 ## Add observations column ###################
 ##############################################

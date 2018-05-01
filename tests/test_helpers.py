@@ -55,22 +55,22 @@ def test_no_nan_rows_array_with_obs(nan_data,
         np.testing.assert_equal( out_no_nan_rows, no_nan_rows_data_and_obs )
         
         
-# def test_no_nan_rows_dataframe_with_obs(nan_data, no_nan_rows_data):
+def test_no_nan_rows_dataframe_with_obs(nan_data, no_nan_rows_data):
 
-#         df = pd.DataFrame(nan_data)
-#         out_no_nan_rows = helpers.no_nan_rows(df)
-#         np.testing.assert_equal( out_no_nan_rows, no_nan_rows_data )
+        df = pd.DataFrame(nan_data)
+        out_no_nan_rows = helpers.no_nan_rows(df)
+        np.testing.assert_equal( out_no_nan_rows, no_nan_rows_data )
         
-# def test_clean_nans(nan_data):
+def test_clean_nans(nan_data):
 
-#         df = pd.DataFrame( data = nan_data["arr_arr"] )
-#         df = helpers.remove_nan_rows(df)
+        df = pd.DataFrame( data = nan_data )
+        df = helpers.remove_nan_rows(df)
         
-#         no_nans = np.array([ [4,      3,      6     ],
-#                              [2,      4,      5     ],
-#                              [2,      5,      6     ]], dtype = np.float64 )
+        no_nans = np.array([ [4,      3,      6     ],
+                             [2,      4,      5     ],
+                             [2,      5,      6     ]], dtype = np.float64 )
                          
-#         assert np.all( df.values == no_nans )
+        np.testing.assert_equal( df.values, no_nans )
                          
 def test_normalize():
         arr = np.array([ [1,3,4],
