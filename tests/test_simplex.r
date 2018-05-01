@@ -73,13 +73,7 @@ ret <- merge(x=py,
              all=FALSE,
              suffixes=c("-Python", "-R") )
 
-comparison <- all.equal(ret[ , "pred-Python"],
-                        ret[ , "pred-R"],
-                        tolerance=1e-10 )
-print( comparison )
 print( ret )
-## if( !comparison )
-## {
-##     print( ret )
-##     stop("Test failed, see above printout.")
-## }
+stopifnot( all.equal(ret[ , "pred-Python"],
+                     ret[ , "pred-R"],
+                     tolerance=1e-10 ) )

@@ -183,7 +183,7 @@ def random_univariate_data():
     n = 12
     df = pd.DataFrame(index=np.arange(n)*10,
                       columns=["A"],
-                      data=np.random.randint(-2*n,2*n,n))
+                      data=np.random.randn(n))
     return df
 
 def test_univariate(random_univariate_data):
