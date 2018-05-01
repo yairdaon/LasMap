@@ -9,7 +9,7 @@ from sklearn import preprocessing as prep
 def remove_nan_rows(data, obs=None):
 
     ind = no_nan_rows(data, obs)
-    # pdb.set_trace()    
+   
     if isinstance(data, np.ndarray):
         no_nan_data = data[ind, :]
     elif isinstance(data, pd.DataFrame):
@@ -37,7 +37,7 @@ def no_nan_rows(data, obs=None):
     if obs is None:
         nan_rows = data_nan_rows
     else:
-        obs_nan_rows = np.isnan(obs)
+        obs_nan_rows = np.ravel(np.isnan(obs))
         nan_rows     = np.logical_or( data_nan_rows, obs_nan_rows )
         
     no_nan_rows = ~nan_rows
