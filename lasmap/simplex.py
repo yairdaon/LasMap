@@ -32,7 +32,7 @@ def univariate(lib,
     assumed that observations are equally spaced and ordered.
 
     '''
-    
+      
     ## We verify data frame only has one variable. Consequently, this
     ## is the variable name and the one that is lagged.
     assert len(lib.columns) == 1
@@ -69,7 +69,7 @@ def univariate(lib,
                                             tmp_obs.values, 
                                             row_data.values,
                                             num_nn=E+1)
-        
+            
     ## As promised above, we shift the data so that pred is aligned
     ## with the time index.
     ret = ret.shift(tp)
@@ -157,8 +157,11 @@ def generic(data,
     if num_nn == 0:
         num_nn = len(x)+1
 
+    ## Make sure obs has shape (n,) and ***not** (n,1) or (1,n)
+    obs = np.ravel(obs)
+    
     data, obs = helpers.remove_nan_rows(data, obs)
-
+    
     ## If we have less valid data points (with observations) than the
     ## required number of nearest neighbours, we cannot make any
     ## prediction and return a NaN.
@@ -176,13 +179,13 @@ def generic(data,
     ## Prediction is a weighted mean of nearest neighbours'
     ## observations:
     obs  = obs[ind] ## NN observations
-    w = np.exp(-dist[ind] / np.min(dist) ) ## NN weights
+    weight = np.exp(-dist[ind] / np.min(dist) ) ## NN weights
 
     ## See docs above.
-    w = np.maximum( w, 1e-6 ) 
+    weight = np.maximum( weight, 1e-6 ) 
 
     ## Simplex predicts as follows:
-    pred = np.sum( w * obs ) / np.sum( w )
+    pred = np.sum( weight * obs ) / np.sum( weight )
 
     return pred
 

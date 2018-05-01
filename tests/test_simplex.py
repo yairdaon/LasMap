@@ -191,6 +191,7 @@ def test_univariate(random_univariate_data):
     preds = simplex.univariate(random_univariate_data,
                                2,
                                tp=2)
+
     preds["truth"] = random_univariate_data["A"]
     preds.to_csv("tests/data/univariate.csv",
                  index=True,
