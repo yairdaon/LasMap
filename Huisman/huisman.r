@@ -54,17 +54,17 @@ gen_Huisman <- function(n, tau = 10)
 }
 
 
-if( !file.exists("raw_noiseless_huisman.csv") ) {
+if( !file.exists("Huisman/raw_noiseless_huisman.csv") ) {
 
     ## If no simulation data exists, generate it
     print( "Generating Huisman data" )
     huisman <- gen_Huisman(1500)
     write.csv(huisman,
-              "raw_noiseless_huisman.csv",
+              "Huisman/raw_noiseless_huisman.csv",
               quote = FALSE,
               row.names = FALSE)
 } else {
-    huisman <- read.csv("raw_noiseless_huisman.csv",
+    huisman <- read.csv("Huisman/raw_noiseless_huisman.csv",
                         header=TRUE)
 }
 

@@ -3,6 +3,7 @@ all:
 	# sudo pip install -e .
 	make tests
 	make huisman
+	python main.py
 
 .PHONY: huisman tests all
 
@@ -15,7 +16,7 @@ tests:
 	Rscript tests/test_simplex.r	
 
 huisman:
-	# huisman/raw_noiseless_huisman.csv
+	Rscript Huisman/huisman.r
 	python huisman_basics.py
 	Rscript huisman_basics.r
 

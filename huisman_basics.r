@@ -10,7 +10,7 @@ for( variable in names( df ) )
 {
     print( variable )
     output <- simplex(df[,variable])
-    png(paste0("Huisman/pix/R/", variable, "_skill_full.png"))
+    png(paste0("Huisman/pix/R/", variable, "_skill.png"))
     plot(output$E, output$rho, type = "l",
          xlab = "Embedding Dimension (E)",
          ylab = "Forecast Skill (rho)")

@@ -97,7 +97,7 @@ for variable in coupled:
     plt.plot(Es, rhos)
     plt.ylabel("Prediction skill - rho")
     plt.xlabel("Embedding dimension - E")
-    plt.savefig("Huisman/pix/python/" + variable + "_skill_full.png")
+    plt.savefig("Huisman/pix/python/" + variable + "_skill.png")
     plt.close()
 
 
