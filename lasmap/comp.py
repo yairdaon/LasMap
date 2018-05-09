@@ -88,37 +88,34 @@ def get_betas(var,
               df,
               E=3,
               theta=1,
+              tp=1,
               lasso_obj=Lasso(warm_start=True)):
     
     '''df is assumed lagged and normalized. Any time/date/etc. column is
     always assumed to be the index.
 
-    gets betas (active variables) for prediction of var using cross
-    validation at every time point
+    gets betas (active variables) for prediction of var (tp time steps
+    ahead) using cross validation at every time point
 
     '''
 
     ## Re-initialize the regularizing parameter to be one.
     lasso_obj.alpha = 1
       
-    ## Observations are one time step ahead
-    obs = helpers.get_obs(df, var)
+    ## Observations are tp time steps ahead
+    obs = helpers.get_obs(df,var,tp)
 
-    ## Remove all rows with nans, lagged and future observations
-    df = helpers.remove_nan_rows( df )
-    pdb.set_trace()
-    ## Separate the observations from the data
-    obs = df[ var + "_p1"  ]
-    df = df.drop([ var + "_p1" ], axis=1 )
-    pdb.set_trace()
     ## Preallocate. According to StackOverflow, this is inferior
     ## (speedwise) to holding rows in a list, then creating the
-    ## dataframe. This can be optimized but for now -fuckit. See
+    ## dataframe. This can be optimized but for now - fuckit. See
     ## https://stackoverflow.com/questions/18771963/pandas-efficient-dataframe-set-row
     betas = pd.DataFrame(data = np.empty(df.shape, dtype=np.bool_),
                          columns = df.columns,
                          index = df.index)
-    pdb.set_trace()
+
+    ## Remove all rows with nans, lagged and future observations
+    df, obs = helpers.remove_nan_rows(df, obs)
+   
     ## Iterate over points, find best predictors and store them
     for ind, row in df.iterrows():
 
@@ -132,6 +129,6 @@ def get_betas(var,
         betas.at[ind] = beta
         
         print( "Cross validating. Variable " + str(var) + " using time stamp " + str(ind) + "."  )
-    pdb.set_trace()    
+
     return betas
 

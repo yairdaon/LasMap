@@ -73,7 +73,6 @@ ret <- merge(x=py,
              all=FALSE,
              suffixes=c("-Python", "-R") )
 
-print( ret )
 stopifnot( all.equal(ret[ , "pred-Python"],
                      ret[ , "pred-R"],
                      tolerance=1e-10 ) )

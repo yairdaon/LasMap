@@ -23,7 +23,7 @@ def remove_nan_rows(data, obs=None):
         if isinstance(data, np.ndarray):
             return no_nan_data, obs[ind]
         elif isinstance(data, pd.DataFrame):
-            return no_nan_data, obs.iat[ind]
+            return no_nan_data, obs.iloc[ind]
         else:
             raise ValueError( "obs has to be either numpy array or pandas data frame." )
         
@@ -37,7 +37,11 @@ def no_nan_rows(data, obs=None):
     if obs is None:
         nan_rows = data_nan_rows
     else:
-        obs_nan_rows = np.ravel(np.isnan(obs))
+        
+        ## No np.ravel - obs is a Series and shape == (n,).
+        obs_nan_rows = np.isnan(obs)
+
+        ## Rows that have NaN in either data or obs.
         nan_rows     = np.logical_or( data_nan_rows, obs_nan_rows )
         
     no_nan_rows = ~nan_rows
@@ -48,13 +52,14 @@ def no_nan_rows(data, obs=None):
     return np.flatnonzero( no_nan_rows )
         
 ##############################################
-## Add observations column ###################
+## Create observations column ################
 ##############################################
 def get_obs(df,
             varName,
             tp=1):
-    '''Get observation (i.e. future, "_p1") dataframe from an existing
-    data frame.
+    '''Get observation (i.e. future, "_p1") Series object from an existing
+    data frame. We use a Series object rather than a DataFrame because
+    a series has shape (n,) and ***not*** (n,1)
 
     varName is assumed given as X, y, chlA etc. and *not* X_0, y_0,
     chlA_0.
@@ -65,21 +70,18 @@ def get_obs(df,
     '''
     assert tp > 0
 
-    obs = pd.DataFrame(data = df[varName + "_0"].shift(-tp).values,
-                       index = df.index,
-                       columns = [varName + "_p" + str(tp)] )
-                       
-    return obs
+    return pd.Series(data = df[varName + "_0"].shift(-tp).values,
+                     index = df.index )
 
 ##############################################
 ## Lagging function ##########################
 ##############################################
-
-## Lags df according to lags. Takes a time column and makes it the
-## index.
 def lag(df,
         lags):
-   
+
+    '''Lags df according to lags.
+
+    '''
     ## If lags is int, we lag all variables 0,...,lags-1. Here we
     ## create the lagging dictionary.
     if isinstance(lags, int):
