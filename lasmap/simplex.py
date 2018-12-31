@@ -3,7 +3,7 @@ import pandas as pd
 import pdb
 import warnings
 
-import helpers
+from lasmap import helpers
 
 '''Generic is the method that actually performs simplex
 projection. It does so for one point only. All other methods are
@@ -103,15 +103,22 @@ def generic_sets(lib_set,
                        columns=["obs"],
                        data=pred_set["target"].values )
     ret["pred"] = np.full(len(ret), np.nan)
-
-    data  = lib_set[ predictors ] 
-    obs   = lib_set[ target ] ## obs for the generic method
-    block = pred_set[ predictors ]
     
-    for row_index, row_data in block.iterrows():
-        
-        ret.at[row_index, "pred"] = generic(data.values,
-                                            obs.values,
+    lib  = lib_set[ predictors ] 
+    obs  = lib_set[ target ] ## obs for the generic method
+    pred = pred_set[ predictors ]
+    
+    for row_index, row_data in pred.iterrows():
+
+        if row_index in lib.index:
+            tmp_lib = lib.drop(row_index, axis=0 )
+            tmp_obs = obs.drop(row_index, axis=0 )
+        else:
+            tmp_lib = lib
+            tmp_obs = obs
+            
+        ret.at[row_index, "pred"] = generic(tmp_lib.values,
+                                            tmp_obs.values,
                                             row_data.values,
                                             num_nn=num_nn)
         

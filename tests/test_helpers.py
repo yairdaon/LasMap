@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 import pytest
+import sys
+sys.path.append( '~/LasMap/')
 
 from lasmap import helpers
 

@@ -1,4 +1,3 @@
-#!/usr/bin/python
 import numpy as np
 import pandas as pd
 import pdb
@@ -7,6 +6,7 @@ import matplotlib.pyplot as plt
 
 import lasmap.helpers as helpers
 import lasmap.comp as comp
+
 
 ## Read data
 df = pd.read_csv("Huisman/processed_huisman.csv",
@@ -47,7 +47,7 @@ df_45 = df.loc[ groups["N45"] ]
 
 ## Plot time series of N1 with colors...
 f, axarr = plt.subplots( len(df.columns), sharex=True )
-f.suptitle( "Husiman: Active Variables for Predicting N1 and Time Series" )
+f.suptitle( "Husiman-Weissing: Active Variables for Predicting N1 and Time Series" )
 for ax in axarr:
     ax.tick_params(
         axis='y',        # changes apply to the y-axis

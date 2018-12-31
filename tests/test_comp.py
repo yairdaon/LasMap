@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import pdb
 import sys
+sys.path.append( '~/LasMap/')
 
 from lasmap import comp
 

@@ -6,6 +6,11 @@ import math
 from sklearn.linear_model import Lasso as Lasso
 from sklearn import preprocessing as prep
 
+def find_best_predictors(data):
+    pass
+
+
+
 def remove_nan_rows(data, obs=None):
 
     ind = no_nan_rows(data, obs)
@@ -91,7 +96,7 @@ def lag(df,
         lags = dic
     
     lagged = pd.DataFrame(index=df.index)
-    for var, lag_list in lags.iteritems():
+    for var, lag_list in lags.items():
         for lag in lag_list:
             col = df[var].shift(lag)
             lagged[ var + "_" + str(lag) ] = col
@@ -111,7 +116,7 @@ def add_noise(df,
     assumed to be the index of the dataframe.
 
     '''
-    return df + np.random.normal(0,sig,df.shape)
+    return df + np.random.normal(loc=0,scale=sig,size=df.shape)
         
 ##############################################
 ## Normalize #################################

@@ -11,7 +11,7 @@ if not os.path.exists("tests/data"):
     os.makedirs("tests/data")
     
 def test_generic_first():
-    
+
     data = np.array( [
         [0, 1, 1, 1],
         [1, 0, 1, 1],

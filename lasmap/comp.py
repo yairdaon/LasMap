@@ -4,7 +4,7 @@ import pdb
 import math
 from sklearn.linear_model import Lasso as Lasso
 
-import helpers
+from lasmap import helpers
 
 ###############################################
 ## Lasso s-map ################################

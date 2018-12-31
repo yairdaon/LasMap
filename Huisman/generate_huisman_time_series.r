@@ -67,39 +67,3 @@ if( !file.exists("Huisman/raw_noiseless_huisman.csv") ) {
     huisman <- read.csv("Huisman/raw_noiseless_huisman.csv",
                         header=TRUE)
 }
-
-## huisman$time <- NULL
-## huisman <- huisman[ 300:500, ]
-## print( names(huisman) )
-
-## ## Normalize and add noise 
-## huisman <- data.frame(scale(huisman)) + runif(prod(dim(huisman))) * sqrt(0.1)
-
-## pdf("huisman.pdf"  )
-## old.par <- par(mfrow=c(2, 3))
-## cols <- c("N1", "N2", "N3", "N4", "N5")
-## for( col in cols )
-## {
-##     ts <- huisman[, col]
-##     print( ts[1:4] )
-##     ## Run simplex with CV
-##     output <- simplex(ts,
-##                       stats_only = TRUE,
-##                       silent = TRUE)
-    
-##     ## Plot
-##     plot(output$E,
-##          output$rho,
-##          type = "l",
-##          xlab = "E",
-##          ylab = "rho",
-##          main = paste0("Univariate prediction for ", col ) )    
-##     grid(ny = NA,
-##          col = "red",
-##          lty = 1)
-##     ## print(paste0("Var ", col, " best E ", which(output$E == max(output$E)) ) ) 
-## }
-## par(old.par)
-## ## plot(
-## dev.off()
-          
