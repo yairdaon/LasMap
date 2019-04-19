@@ -3,13 +3,17 @@ import pandas as pd
 from math import exp as exp
 import pytest
 import os
+import sys
+import pdb
+sys.path.append('~/LasMap/')
 
-from lasmap import simplex
+import lasmap.simplex as simplex
 
 ## Making sure directory where we save data exists
-if not os.path.exists("tests/data"):
-    os.makedirs("tests/data")
-    
+dirname="data/tests/"
+if not os.path.exists(dirname):
+    os.makedirs(dirname)
+   
 def test_generic_first():
 
     data = np.array( [
@@ -31,11 +35,10 @@ def test_generic_first():
 
 @pytest.fixture
 def simple_data():
-
     '''Data with known distances between data points
 
     '''
-    
+
     x = np.ones(3)
     obs = np.array([1.,2.,3.,4.])
     data = np.empty( (4,3) )
@@ -70,13 +73,15 @@ def simple_data():
     df = pd.DataFrame(columns=columns,
                       data=arr)
 
-    df.to_csv("tests/data/simple_data.csv",
+    df.to_csv(filename,
               index=False)
 
     return {"data" : data, "x": x, "obs": obs }
     
+    
 def test_data_is_OK(simple_data):
 
+    
     ## Unpack
     data = simple_data["data"]
     x = simple_data["x"]
@@ -107,8 +112,9 @@ def test_generic_two_nearest_neighbours(simple_data):
     ## They need to be equal, at least up to numerical errors.
     assert abs(func - calc) < 1e-14
 
-    fl = open("tests/data/2NN.txt","w") 
-    fl.write(str(calc) + "\n" )
+    fl = open("/data/tests/2NN.txt","r")
+    df = pd.from_csv(fl)
+    assert False
     
 def test_generic_three_nearest_neighbours(simple_data):
 
@@ -193,7 +199,7 @@ def test_univariate(random_univariate_data):
                                tp=2)
 
     preds["truth"] = random_univariate_data["A"]
-    preds.to_csv("tests/data/univariate.csv",
+    preds.to_csv("data/tests/univariate.csv",
                  index=True,
                  index_label="time",
                  na_rep = "NaN")
